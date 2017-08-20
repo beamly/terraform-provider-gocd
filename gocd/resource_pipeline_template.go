@@ -13,6 +13,7 @@ func resourcePipelineTemplate() *schema.Resource {
 		Read:   resourcePipelineTemplateRead,
 		Update: resourcePipelineTemplateUpdate,
 		Delete: resourcePipelineTemplateDelete,
+		Exists: resourcePipelineTemplateExists,
 		Importer: &schema.ResourceImporter{
 			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 				d.Set("name", d.Id())
@@ -41,8 +42,17 @@ func resourcePipelineTemplate() *schema.Resource {
 	}
 }
 
-func resourcePipelineTemplateCreate(d *schema.ResourceData, meta interface{}) error {
+func resourcePipelineTemplateExists(d *schema.ResourceData, meta interface{}) (bool, error) {
+	var name string
+	if ptname, hasName := d.GetOk("name"); hasName {
+		name = ptname.(string)
+	}
+	pt, _, err := meta.(*gocd.Client).PipelineTemplates.Get(context.Background(), name)
+	exists := (pt.Name == name) && (err == nil)
+	return exists, err
+}
 
+func resourcePipelineTemplateCreate(d *schema.ResourceData, meta interface{}) error {
 	var name string
 	if ptname, hasName := d.GetOk("name"); hasName {
 		name = ptname.(string)
@@ -63,8 +73,12 @@ func resourcePipelineTemplateRead(d *schema.ResourceData, meta interface{}) erro
 		name = ptname.(string)
 	}
 
-	pt, _, err := meta.(*gocd.Client).PipelineTemplates.Get(context.Background(), name)
+	pt, resp, err := meta.(*gocd.Client).PipelineTemplates.Get(context.Background(), name)
 	if err != nil {
+		if resp.HTTP.StatusCode == 404 {
+			d.SetId("")
+			return nil
+		}
 		return err
 	}
 
@@ -97,7 +111,6 @@ func resourcePipelineTemplateDelete(d *schema.ResourceData, meta interface{}) er
 		}
 	}
 
-	//d.SetId("")
 	return nil
 }
 
