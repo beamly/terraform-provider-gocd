@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Create Resources used by travis for artifact upload.
+Parameters:
+  BucketName:
+    Type: String
+    Default: travis-artifacts.drewsonne.com
+  TravisUserName:
+    Type: String
+    Default: travis
+Resources:
+  ArtifactBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+  TravisUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: !Ref TravisUserName
+      ManagedPolicyArns:
+        - !Ref TravisArtifactUploadPolicy
+  TravisKey:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      UserName: !Ref TravisUserName
+    DependsOn: TravisUser
+  TravisArtifactUploadPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          -
+            Effect: "Allow"
+            Action: "s3:PutObject"
+            Resource: !Sub "${ArtifactBucket.Arn}/*"
+
+
+Outputs:
+  BucketName:
+    Value: !Ref BucketName
+  TravisAccessKey:
+    Value: !Ref TravisKey
+  TravisSecretKey:
+    Value: !GetAtt TravisKey.SecretAccessKey
