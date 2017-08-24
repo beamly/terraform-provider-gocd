@@ -2,7 +2,7 @@ package gocd
 
 import (
 	"fmt"
-	"github.com/hashicorp/terraform/helper/resource"
+	r "github.com/hashicorp/terraform/helper/resource"
 	"testing"
 )
 
@@ -22,8 +22,7 @@ func DataSourceJobDefinition(t *testing.T, index int, configPath string, expecte
 	return func(t *testing.T) {
 		config := testFile(configPath)
 		expected := testFile(expectedPath)
-		resource.Test(t, resource.TestCase{
-			PreCheck:  func() { testAccPreCheck(t) },
+		r.UnitTest(t, r.TestCase{
 			Providers: testGocdProviders,
 			Steps: testStepComparisonCheck(&TestStepJSONComparison{
 				Index:        index,

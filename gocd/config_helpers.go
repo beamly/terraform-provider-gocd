@@ -34,7 +34,6 @@ func definitionDocFinish(d *schema.ResourceData, r interface{}) error {
 	d.SetId(strconv.Itoa(hashcode.String(jsonString)))
 
 	return nil
-
 }
 
 func supressJSONDiffs(k, old, new string, d *schema.ResourceData) bool {

@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
-#set -x
-#
-#pwd
 
+ENDPOINT="http://127.0.0.1:8153/go/api/admin/config.xml"
 function get_status {
     curl -H 'Accept: application/vnd.go.cd.v3+json' \
         --write-out %{http_code} \
         --silent \
         --output /dev/null \
-        http://127.0.0.1:8153/go/api/admin/templates
+        ${ENDPOINT}
 }
 
 counter=0
@@ -26,7 +24,7 @@ while [ $counter -lt 30 ]; do
     if [ "$elapsed" == "120" ]; then
         cat godata/server/logs/*.log
         curl -H 'Accept: application/vnd.go.cd.v3+json' \
-            http://127.0.0.1:8153/go/api/admin/templates
+            ${ENDPOINT}
     fi
 
     echo "Got status ${code}. Elapsed: '${elapsed}' seconds."

@@ -1,8 +1,8 @@
+# Needed for docker-compose
+sudo: required
 language: go
 go:
   - 1.8.x
-
-sudo: required
 
 services:
   - docker
@@ -16,14 +16,24 @@ env:
   global:
     - secure: ax6R000Lq+b4jbOKXxXBFyWKAQdPQkdwxSqy7qukPKk9fOh5mXI/gEX7ep6JHRvcBqbq5LavXgNCQpyGdTevhdi8eQBhvOE79one/bLbDYj4mCbDu2rHtk3Dln3+xWTIhe2HFembCxcVHLHK8zAv8vSadJN/bDEGGTdfkZS+h3GW5LKhtcD3j3prJ6baJUkmGiiOt7kDcYEYkXMDaS13fM9E/G8GD0hI7YrwUJ5HY1EMBcUjHiFUDwSLM6OqF4bKbDxVcsVNwh5SLSTG4PDMmdKDP3suTgQZauGuzCL51KjsYIdC9wGkFnUK2BLM++7CkYjsrVAAGEWoQhPhjIi5psuQbaGYrvtbSbjb6Zx2jjtbzTJJ1KtIRcjzkiFKF6EhG8+HAlfSubBSMov+geoj5VXbMgCT7Pwnzf7I4kKd+xUYvKZ8Zda3OrXk2iY9qJ+WGCgtb38rHsgE1bLIVcdZyX0cNcTQZmCvTny81teZNuIS5zWbOyZxwnRVaDv51uvs+YL1+zwgBmSR2dzef5NN4eUxzip93/FhBDmqYxpu7XWtMMrI5roWsmpWNL0DACf8qIDRYtGR2Wr+oC+uadG8aqEiCp5vPmgsPmOwvatOqAScuR5J2bYylDqtseFKUuWoYPNT6BfTk+ZMLv9r08230+W5SmF2/KIzJm0OjRc/OLw=
 
-matrix:
-  fast_finish: true
-
 before_install:
   - make before_install
 
+install:
+# This script is used by the Travis build to install a cookie for
+# go.googlesource.com so rate limits are higher when using `go get` to fetch
+# packages that live there.
+# See: https://github.com/golang/go/issues/12933
+- bash scripts/gogetcookie.sh
+- go get github.com/kardianos/govendor
+
 script:
+  - make vendor-status
+  - make vet
   - make script
+
+matrix:
+  fast_finish: true
 
 after_failure:
   - make after_failure
@@ -32,6 +42,9 @@ after_success:
   - make after_success
 
 deploy:
+  # We do a `skip_cleanup` because when the docker-compose runs, it creates files in the host file system with the
+  # userid `1000`. Our travis user does not have the userid `1000`, so it can not clean those files up, causing the
+  # deploy to break.
   - provider: script
     script: make deploy_on_tag
     on:
