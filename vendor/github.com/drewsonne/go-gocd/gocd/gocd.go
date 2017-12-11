@@ -177,13 +177,15 @@ func (c *Client) Unlock() {
 }
 
 // NewRequest creates an HTTP requests to the GoCD API endpoints.
-func (c *Client) NewRequest(method, urlStr string, body interface{}, apiVersion string) (*APIRequest, error) {
-	request := &APIRequest{}
+func (c *Client) NewRequest(method, urlStr string, body interface{}, apiVersion string) (req *APIRequest, err error) {
+	var rel *url.URL
+	var buf io.ReadWriter
+	req = &APIRequest{}
 
 	// I'm not sure how to get this method to return an error intentionally for testing. For testing purposes, I've
 	// added a switch so that the error handling in dependent methods can be tested.
 	if os.Getenv("GOCD_RAISE_ERROR_NEW_REQUEST") == "yes" {
-		return request, errors.New("Mock Testing Error")
+		return req, errors.New("Mock Testing Error")
 	}
 
 	// Some calls
@@ -192,9 +194,8 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}, apiVersion 
 	} else {
 		urlStr = "api/" + urlStr
 	}
-	rel, err := url.Parse(urlStr)
-	if err != nil {
-		return request, err
+	if rel, err = url.Parse(urlStr); err != nil {
+		return req, err
 	}
 
 	u := c.BaseURL.ResolveReference(rel)
@@ -202,7 +203,6 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}, apiVersion 
 		u.RawQuery = c.BaseURL.RawQuery
 	}
 
-	var buf io.ReadWriter
 	if body != nil {
 		buf = new(bytes.Buffer)
 
@@ -214,7 +214,7 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}, apiVersion 
 			return nil, err
 		}
 		bdy, _ := ioutil.ReadAll(buf)
-		request.Body = string(bdy)
+		req.Body = string(bdy)
 
 		buf = new(bytes.Buffer)
 		enc = json.NewEncoder(buf)
@@ -222,29 +222,27 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}, apiVersion 
 		enc.Encode(body)
 	}
 
-	req, err := http.NewRequest(method, u.String(), buf)
-	request.HTTP = req
-	if err != nil {
-		return request, err
+	if req.HTTP, err = http.NewRequest(method, u.String(), buf); err != nil {
+		return req, err
 	}
 
 	if body != nil {
-		req.Header.Set("Content-Type", "application/json")
+		req.HTTP.Header.Set("Content-Type", "application/json")
 	}
 	if apiVersion != "" {
-		req.Header.Set("Accept", apiVersion)
+		req.HTTP.Header.Set("Accept", apiVersion)
 	}
-	req.Header.Set("User-Agent", c.UserAgent)
+	req.HTTP.Header.Set("User-Agent", c.UserAgent)
 
 	if c.cookie == "" {
 		if c.Username != "" && c.Password != "" {
-			req.SetBasicAuth(c.Username, c.Password)
+			req.HTTP.SetBasicAuth(c.Username, c.Password)
 		}
 	} else {
-		req.Header.Set("Cookie", c.cookie)
+		req.HTTP.Header.Set("Cookie", c.cookie)
 	}
 
-	return request, nil
+	return
 }
 
 // Do takes an HTTP request and resposne the response from the GoCD API endpoint.

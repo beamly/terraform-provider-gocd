@@ -55,3 +55,5 @@ brew:
   homepage: https://github.com/drewsonne/gocdsdk
   test: |
     system "#{bin}/gocd --version"
+  install: |
+    bin.install "gocd"

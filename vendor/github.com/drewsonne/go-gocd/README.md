@@ -1,13 +1,14 @@
-# GoCD SDK 0.6.4
+# GoCD SDK 0.6.5
 
 [![GoDoc](https://godoc.org/github.com/drewsonne/go-gocd/gocd?status.svg)](https://godoc.org/github.com/drewsonne/go-gocd/gocd)
 [![Build Status](https://travis-ci.org/drewsonne/go-gocd.svg?branch=master)](https://travis-ci.org/drewsonne/go-gocd)
 [![codecov](https://codecov.io/gh/drewsonne/go-gocd/branch/master/graph/badge.svg)](https://codecov.io/gh/drewsonne/go-gocd)
 [![codebeat badge](https://codebeat.co/badges/1ea74899-2337-4ea6-aaeb-2cc8037fe362)](https://codebeat.co/projects/github-com-drewsonne-go-gocd-master)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdrewsonne%2Fgo-gocd.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdrewsonne%2Fgo-gocd?ref=badge_shield)
 
 ## CLI
 
-CLI tool to interace with GoCD Server.
+CLI tool to interface with GoCD Server.
 
 ### Usage
 
@@ -44,7 +45,7 @@ The library can either be configured using environment variables, cli flags, or 
 | Username | `--username` | `username` | `$GOCD_USERNAME` |
 | Password | `--password` | `password` | `$GOCD_PASSWORD` |
 | Skip HTTPS/SSL Certification Check | `--skip_ssl_check` | `skip_ssl_check` | `$GOCD_SKIP_SSL_CHECK` |
- 
+
 ##### YAML Config File
 
 Run `gocd configure` to launch a wizard which will create a file at `~/.gocd.conf`, or create the file manually:
@@ -96,7 +97,7 @@ func main() {
         Username: "ApiUser",
         Password: "MySecretPassword",
     }
-    
+
     c := cfg.Client()
 
     // list all agents in use by the GoCD Server
@@ -110,7 +111,7 @@ func main() {
         	panic(err)
         }
     }
-    
+
     fmt.Println(a)
 }
 ```
@@ -142,9 +143,11 @@ schedule for those features can be found in the project for this github reposito
 
 ## Background ##
 This library's structure was initially inspired by [https://github.com/google/go-github](https://github.com/google/go-github).
-There may still be some vestigial code and structures from this library which will be removed in future revisions and 
+There may still be some vestigial code and structures from this library which will be removed in future revisions and
 before v1.0.0 of this library.
- 
+
 ## License ##
 
-This library is distributed under the LGPL-style license found in [LICENSE](./LICENSE) file.
+This library is distributed under the Apache 2.0 license found in [LICENSE](./LICENSE) file.
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdrewsonne%2Fgo-gocd.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdrewsonne%2Fgo-gocd?ref=badge_large)

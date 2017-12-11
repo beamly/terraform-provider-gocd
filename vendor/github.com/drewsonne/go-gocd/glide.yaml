@@ -6,6 +6,12 @@ import:
 - package: github.com/urfave/cli
   version: 1.20.0
 - package: gopkg.in/yaml.v2
+- package: github.com/sirupsen/logrus
+  version: master
+- package: github.com/Sirupsen/logrus
+  repo: git@github.com:/sirupsen/logrus
+  vcs: git
+  version: master
 testImport:
 - package: github.com/goreleaser/goreleaser
   version: ^0.30.0
