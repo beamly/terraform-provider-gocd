@@ -1,7 +1,6 @@
 package terminal
 
 import (
-	"fmt"
 	"os"
 	"unicode"
 )
@@ -47,7 +46,7 @@ func (rr *RuneReader) ReadLine(mask rune) ([]rune, error) {
 			Print("\r\n")
 
 			// we're done processing the input, and treat interrupt like an error
-			return line, fmt.Errorf("interrupt")
+			return line, InterruptErr
 		}
 
 		// allow for backspace/delete editing of inputs
@@ -177,7 +176,7 @@ func (rr *RuneReader) ReadLine(mask rune) ([]rune, error) {
 			// leave the cursor where the user left it
 			CursorBack(len(line) - index - 1)
 
-			// accomodate the new letter in our counter
+			// accommodate the new letter in our counter
 			index++
 		}
 	}

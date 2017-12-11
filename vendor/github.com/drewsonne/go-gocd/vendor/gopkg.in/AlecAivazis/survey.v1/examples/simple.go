@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/AlecAivazis/survey"
+	"gopkg.in/AlecAivazis/survey.v1"
 )
 
 // the questions to ask
@@ -13,7 +13,8 @@ var simpleQs = []*survey.Question{
 		Prompt: &survey.Input{
 			Message: "What is your name?",
 		},
-		Validate: survey.Required,
+		Validate:  survey.Required,
+		Transform: survey.Title,
 	},
 	{
 		Name: "color",

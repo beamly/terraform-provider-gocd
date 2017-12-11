@@ -1,0 +1,32 @@
+dist: trusty
+sudo: required
+language: go
+go: 1.9
+services:
+  - docker
+install:
+  - make setup
+  - gem install fpm
+  - sudo apt-get update
+  - sudo apt-get install --yes snapd rpm
+  - export PATH=/snap/bin:$PATH
+  - sudo snap install snapcraft --candidate --classic
+script:
+  - make ci
+  - test -n "$TRAVIS_TAG" || go run main.go --skip-validate --skip-publish
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+  - test -n "$TRAVIS_TAG" && docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - test -n "$TRAVIS_TAG" && go run main.go
+  - make static
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  repo: goreleaser/goreleaser.github.io
+  local_dir: ./dist/goreleaser.github.io
+  target_branch: master
+  on:
+    tags: true
+notifications:
+  email: false

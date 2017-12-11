@@ -210,7 +210,7 @@ host operating system:
 `terraform init` will search this directory for additional plugins during
 plugin initialization.
 
-The naming scheme for provider plugins is `terraform-provider-NAME-vX.Y.Z`,
+The naming scheme for provider plugins is `terraform-provider-NAME_vX.Y.Z`,
 and Terraform uses the name to understand the name and version of a particular
 provider binary. Third-party plugins will often be distributed with an
 appropriate filename already set in the distribution archive so that it can
@@ -239,6 +239,9 @@ For example:
 
 plugin_cache_dir = "$HOME/.terraform.d/plugin-cache"
 ```
+
+This directory must already exist before Terraform will cache plugins;
+Terraform will not create the directory itself.
 
 Please note that on Windows it is necessary to use forward slash separators
 (`/`) rather than the conventional backslash (`\`) since the configuration
