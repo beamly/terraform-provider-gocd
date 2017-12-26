@@ -29,10 +29,12 @@ func resourcePipeline() *schema.Resource {
 			"label_template": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"enable_pipeline_locking": {
 				Type:     schema.TypeBool,
 				Optional: true,
+				Computed: true,
 			},
 			"template": {
 				Type:     schema.TypeString,
@@ -97,15 +99,18 @@ func resourcePipeline() *schema.Resource {
 									"name": {
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"branch": {
 										Type:             schema.TypeString,
 										Optional:         true,
+										Computed:         true,
 										DiffSuppressFunc: supressMaterialBranchDiff,
 									},
 									"shallow_clone": {
 										Type:     schema.TypeBool,
 										Optional: true,
+										Default:  false,
 									},
 									"destination": {
 										Type:     schema.TypeString,
@@ -131,6 +136,7 @@ func resourcePipeline() *schema.Resource {
 									"invert_filter": {
 										Type:     schema.TypeBool,
 										Optional: true,
+										Default:  false,
 									},
 									"filter": {
 										Type:     schema.TypeList,
@@ -468,7 +474,7 @@ func readPipeline(d *schema.ResourceData, p *gocd.Pipeline, err error) error {
 	err = readPipelineMaterials(d, p.Materials)
 
 	if len(p.Parameters) > 0 {
-		rawParams := map[string]string{}
+		rawParams := make(map[string]string, len(p.Parameters))
 		for _, param := range p.Parameters {
 			rawParams[param.Name] = param.Value
 		}

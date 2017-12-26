@@ -19,15 +19,26 @@ func testResourceEnvironmentAssociationBasic(t *testing.T) {
 			{
 				Config: testFile("resource_environment_association.0.rsc.tf"),
 				Check: r.ComposeTestCheckFunc(
-					testCheckResourceExists("gocd_environment.test-environment"),
-					testCheckResourceName("gocd_environment.test-environment",
-						"test-environment"),
-					testCheckResourceExists("gocd_pipeline.test-pipeline"),
-					testCheckResourceName("gocd_pipeline.test-pipeline",
-						"test-pipeline"),
-					testCheckResourceExists("gocd_environment_association.test-environment-association"),
-					testCheckResourceName("gocd_environment_association.test-environment-association",
-						"test-environment/p/test-pipeline"),
+					r.TestCheckResourceAttr(
+						"gocd_environment.test-environment",
+						"name",
+						"test-environment",
+					),
+					r.TestCheckResourceAttr(
+						"gocd_pipeline.test-pipeline",
+						"name",
+						"test-pipeline",
+					),
+					r.TestCheckResourceAttr(
+						"gocd_pipeline.test-pipeline",
+						"id",
+						"test-pipeline",
+					),
+					r.TestCheckResourceAttr(
+						"gocd_environment_association.test-environment-association",
+						"id",
+						"test-environment/p/test-pipeline",
+					),
 				),
 			},
 		},
