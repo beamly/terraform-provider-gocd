@@ -1,34 +1,49 @@
 data "gocd_task_definition" "test" {
   type = "exec"
+
   run_if = [
-    "passed"]
+    "passed",
+  ]
+
   command = "/usr/local/bin/terraform"
+
   arguments = [
     "-debug",
-    "version"]
+    "version",
+  ]
+
   working_directory = "tmp/"
 }
 
 data "gocd_job_definition" "test" {
   name = "job-name"
+
   tasks = [
-    "${data.gocd_task_definition.test.json}"]
+    "${data.gocd_task_definition.test.json}",
+  ]
 }
 
 resource "gocd_pipeline_stage" "test-stage" {
   name = "test-stage"
+
   jobs = [
-    "${data.gocd_job_definition.test.json}"]
+    "${data.gocd_job_definition.test.json}",
+  ]
+
   manual_approval = true
+
   authorization_roles = [
     "one",
-    "two"]
+    "two",
+  ]
+
   environment_variables = [
     {
-      name = "IMAGE"
+      name  = "IMAGE"
       value = "#{Image}"
     },
   ]
+
   pipeline_template = "${gocd_pipeline_template.test-pipeline.id}"
 }
 
