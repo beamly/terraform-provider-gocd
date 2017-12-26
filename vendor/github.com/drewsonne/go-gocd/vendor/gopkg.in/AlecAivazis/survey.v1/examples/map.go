@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/AlecAivazis/survey"
+	"gopkg.in/AlecAivazis/survey.v1"
 )
 
 // the questions to ask
@@ -26,7 +26,7 @@ var simpleQs = []*survey.Question{
 }
 
 func main() {
-	ansmap := make(map[string]string)
+	ansmap := make(map[string]interface{})
 
 	// ask the question
 	err := survey.Ask(simpleQs, &ansmap)

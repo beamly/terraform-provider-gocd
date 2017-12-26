@@ -63,12 +63,11 @@ func NewCliClient(c *cli.Context) (*gocd.Client, error) {
 	setStringFromContext(&cfg.Server, "server", c)
 
 	if cfg.Server == "" {
-		if cfgErr != nil {
-			return nil, cfgErr
-		} else {
+		if cfgErr == nil {
 			// If we didn't have any errors, and our server is empty, use the local.
 			cfg.Server = "https://127.0.0.1:8154/go/"
 		}
+		return nil, cfgErr
 	}
 
 	setStringFromContext(&cfg.Username, "username", c)
@@ -99,8 +98,10 @@ func handleOutput(r interface{}, reqType string) cli.ExitCoder {
 	return nil
 }
 
+// ActionWrapperFunc describes the callback provided to ActionWrapper
 type ActionWrapperFunc func(client *gocd.Client, c *cli.Context) (interface{}, *gocd.APIResponse, error)
 
+// ActionWrapper handles the deferencing, and casting of the client object, and error handling.
 func ActionWrapper(callback ActionWrapperFunc) interface{} {
 	return func(c *cli.Context) error {
 		cl := c.App.Metadata["c"].(func(c *cli.Context) (*gocd.Client, error))

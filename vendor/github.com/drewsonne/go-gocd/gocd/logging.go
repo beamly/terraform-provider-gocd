@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+// Set logging level and type constants
 const (
 	LogLevelEnvVarName = "GOCD_LOG_LEVEL"
 	LogLevelDefault    = "WARNING"
@@ -26,7 +27,7 @@ var logFormat = map[string]log.Formatter{
 	"TEXT": &log.TextFormatter{},
 }
 
-// Setup logging based on Environment Variables
+// SetupLogging based on Environment Variables
 //
 //  Set Logging level with $GOCD_LOG_LEVEL
 //  Allowed Values:
@@ -53,9 +54,8 @@ func getLogType() string {
 	if len(logType) == 0 {
 		// If no env is set, return the default
 		return LogTypeDefault
-	} else {
-		return logType
 	}
+	return logType
 }
 
 // Get the log level from env variables
@@ -64,8 +64,6 @@ func getLogLevel() string {
 	if len(loglevel) == 0 {
 		// If no env is set, return the default
 		return LogLevelDefault
-	} else {
-		return loglevel
 	}
-
+	return loglevel
 }

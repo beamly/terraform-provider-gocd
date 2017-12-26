@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.6.5] - 11-12-2017
+### Changed
+ - Fixed bugs around loading config profiles
+ - Discontinued ARM releases
+ - Widespread refactoring of interal CLI structures to make testing more viable
 
 ## [0.3.10] - 15-08-2017
 ### Changed
@@ -26,7 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
  - Added Pipeline status querying and pipeline history structure
  - Added Basic get-configuration command.
  - Added plugin retrieval
- 
+
 ### Changed
  - Fixed a bug where if the config file was not found the cli tool would crash.
 
@@ -67,7 +72,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
  - Added `goreleaser` to travis build
  - Made sure deploy occurs on golang 1.8
- 
+
 ## [0.1.12] - 30-07-2017
 
 ### Changed

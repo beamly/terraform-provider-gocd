@@ -104,7 +104,7 @@ func (pr *Properties) Write(p []byte) (n int, err error) {
 	return numBytes, nil
 }
 
-// MarshallJSON converts the properties structure to a list of maps
+// MarshalJSON converts the properties structure to a list of maps
 func (pr *Properties) MarshalJSON() ([]byte, error) {
 	structures := make([]map[string]string, len(pr.DataFrame))
 

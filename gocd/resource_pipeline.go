@@ -288,6 +288,10 @@ func extractPipeline(d *schema.ResourceData) (p *gocd.Pipeline, err error) {
 		p.Template = template.(string)
 	}
 
+	if pipelineLocking, hasPipelineLocking := d.GetOk("enable_pipeline_locking"); hasPipelineLocking {
+		p.EnablePipelineLocking = pipelineLocking.(bool)
+	}
+
 	p.Name = d.Get("name").(string)
 
 	rawMaterials := d.Get("materials")
