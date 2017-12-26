@@ -34,9 +34,11 @@ func testResourcePipelineDisableAutoUpdate(t *testing.T) {
 			{
 				Config: testFile("resource_pipeline_auto_update.0.rsc.tf"),
 				Check: r.ComposeTestCheckFunc(
-					testCheckResourceExists("gocd_pipeline.pipeline1"),
-					testCheckResourceName(
-						"gocd_pipeline.pipeline1", "pipeline1"),
+					r.TestCheckResourceAttr(
+						"gocd_pipeline.pipeline1",
+						"name",
+						"pipeline1",
+					),
 				),
 				ExpectError: errRE,
 			},
@@ -54,17 +56,21 @@ func testResourcePipelineBasic(t *testing.T) {
 			{
 				Config: testFile("resource_pipeline.0.rsc.tf"),
 				Check: r.ComposeTestCheckFunc(
-					testCheckResourceExists("gocd_pipeline.test-pipeline"),
-					testCheckResourceName(
-						"gocd_pipeline.test-pipeline", "pipeline0-terraform"),
+					r.TestCheckResourceAttr(
+						"gocd_pipeline.test-pipeline",
+						"name",
+						"pipeline0-terraform",
+					),
 				),
 			},
 			{
 				Config: testFile("resource_pipeline.1.rsc.tf"),
 				Check: r.ComposeTestCheckFunc(
-					testCheckResourceExists("gocd_pipeline.test-pipeline"),
-					testCheckResourceName(
-						"gocd_pipeline.test-pipeline", "pipeline0-terraform"),
+					r.TestCheckResourceAttr(
+						"gocd_pipeline.test-pipeline",
+						"name",
+						"pipeline0-terraform",
+					),
 				),
 			},
 		},
@@ -81,9 +87,11 @@ func testResourcePipelineFullStack1(t *testing.T) {
 			{
 				Config: testFile("resource_pipeline.3.rsc.tf"),
 				Check: r.ComposeTestCheckFunc(
-					testCheckResourceExists("gocd_pipeline.test-pipeline3"),
-					testCheckResourceName(
-						"gocd_pipeline.test-pipeline3", "test-pipeline3"),
+					r.TestCheckResourceAttr(
+						"gocd_pipeline.test-pipeline3",
+						"name",
+						"test-pipeline3",
+					),
 				),
 			},
 		},
@@ -99,9 +107,11 @@ func testResourcePipelineFullStack2(t *testing.T) {
 			{
 				Config: testFile("resource_pipeline.4.rsc.tf"),
 				Check: r.ComposeTestCheckFunc(
-					testCheckResourceExists("gocd_pipeline.test-pipeline"),
-					testCheckResourceName(
-						"gocd_pipeline.test-pipeline", "test-pipeline"),
+					r.TestCheckResourceAttr(
+						"gocd_pipeline.test-pipeline",
+						"name",
+						"test-pipeline",
+					),
 				),
 			},
 		},

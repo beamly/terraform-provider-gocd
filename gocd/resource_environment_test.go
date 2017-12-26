@@ -19,9 +19,11 @@ func testResourceEnvironmentBasic(t *testing.T) {
 			{
 				Config: testFile("resource_environment.0.rsc.tf"),
 				Check: r.ComposeTestCheckFunc(
-					testCheckResourceExists("gocd_environment.test-environment"),
-					testCheckResourceName(
-						"gocd_environment.test-environment", "test-environment"),
+					r.TestCheckResourceAttr(
+						"gocd_environment.test-environment",
+						"name",
+						"test-environment",
+					),
 				),
 			},
 		},
