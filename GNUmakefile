@@ -15,7 +15,6 @@ travis: before_install script after_success deploy_on_develop
 
 before_install:
 	go get -u github.com/golang/lint/golint
-	go get -u github.com/goreleaser/goreleaser
 	curl https://glide.sh/get | sh
 	glide install
 
@@ -24,6 +23,7 @@ script: testacc
 after_failure: cleanup
 
 after_success: report_coverage cleanup
+	go get -u github.com/goreleaser/goreleaser
 
 deploy_on_tag:
 	gem install --no-ri --no-rdoc fpm
