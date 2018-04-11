@@ -63,7 +63,7 @@ build: fmtcheck
 	go install
 
 test: fmtcheck
-	TF_ACC=1 TESTARGS=$(TESTARGS) bash ./scripts/go-test.sh
+	TF_ACC=1 TESTARGS="$(TESTARGS)" bash ./scripts/go-test.sh
 
 testacc: provision-test-gocd
 	bash scripts/wait-for-test-server.sh
