@@ -67,7 +67,7 @@ test: fmtcheck
 
 testacc: provision-test-gocd
 	bash scripts/wait-for-test-server.sh
-	TF_ACC=1 TESTARGS=$(TESTARGS) $(MAKE) test
+	TF_ACC=1 $(MAKE) test
 
 vet:
 	@echo "go vet ."

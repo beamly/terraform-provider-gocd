@@ -6,7 +6,7 @@
 /terraform.tfstate
 /terraform.tfstate.backup
 /godata/server/config/cruise-config.xml
-/gocd/profile.out
+/profile.out
 /dist
 /.terraform
 /coverage.txt

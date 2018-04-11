@@ -302,6 +302,18 @@ resource "gocd_pipeline" "build" {
 
  - `version` - The current version of the resource configuration in GoCD.
 
+## Development Setup
+
+Get project and install dependencies using glide:
+
+  $ go get github.com/drewsonne/terraform-provider-gocd
+  $ cd $GOPATH/src/github.com/drewsonne/terraform-provider-gocd/
+  $ make
+
+Then you can run tests as follows:
+
+  $ make test
+
 ## Demo
 
 You will need docker and terraform >= 0.10.0 installed for this demo to work.
