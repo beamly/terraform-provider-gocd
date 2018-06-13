@@ -29,6 +29,7 @@ cache:
   pip: true
 
 before_install:
+  - openssl aes-256-cbc -K $encrypted_79c46fcb1f11_key -iv $encrypted_79c46fcb1f11_iv -in .gitcookies.enc -out .gitcookies -d
   - make before_install
 
 install:
