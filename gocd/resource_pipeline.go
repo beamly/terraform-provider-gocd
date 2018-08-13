@@ -3,6 +3,7 @@ package gocd
 import (
 	"context"
 	"github.com/beamly/go-gocd/gocd"
+	"strings"
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/helper/validation"
@@ -291,7 +292,11 @@ func resourcePipelineExists(d *schema.ResourceData, meta interface{}) (bool, err
 	client.Lock()
 	defer client.Unlock()
 	if p, _, err := client.PipelineConfigs.Get(context.Background(), name); err != nil {
-		return false, err
+		if strings.Contains(err.Error(), "404 Not Found") {
+			return false, nil
+		} else {
+			return false, err
+		}
 	} else {
 		return (p.Name == name), nil
 	}

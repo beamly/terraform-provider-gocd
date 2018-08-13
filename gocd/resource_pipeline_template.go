@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/beamly/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/schema"
+	"strings"
 )
 
 const PLACEHOLDER_NAME = "TERRAFORM_PLACEHOLDER"
@@ -49,9 +50,15 @@ func resourcePipelineTemplateExists(d *schema.ResourceData, meta interface{}) (b
 	client.Lock()
 	defer client.Unlock()
 
-	pt, _, err := client.PipelineTemplates.Get(context.Background(), name)
-	exists := (pt.Name == name) && (err == nil)
-	return exists, err
+	if p, _, err := client.PipelineTemplates.Get(context.Background(), name); err != nil {
+		if strings.Contains(err.Error(), "404 Not Found") {
+			return false, nil
+		} else {
+			return false, err
+		}
+	} else {
+		return (p.Name == name), nil
+	}
 }
 
 func resourcePipelineTemplateCreate(d *schema.ResourceData, meta interface{}) error {

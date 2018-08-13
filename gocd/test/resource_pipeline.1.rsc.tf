@@ -1,9 +1,9 @@
 resource "gocd_pipeline_template" "test-pipeline" {
-  name = "template0-terraform"
+  name = "template1-terraform"
 }
 
 resource "gocd_pipeline" "test-pipeline" {
-  name                    = "pipeline0-terraform"
+  name                    = "pipeline1-terraform"
   group                   = "testing"
   template                = "${gocd_pipeline_template.test-pipeline.name}"
   enable_pipeline_locking = true

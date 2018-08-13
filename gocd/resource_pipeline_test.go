@@ -1,7 +1,10 @@
 package gocd
 
 import (
+	"context"
+	"github.com/beamly/go-gocd/gocd"
 	r "github.com/hashicorp/terraform/helper/resource"
+	"os"
 	"regexp"
 	"testing"
 )
@@ -13,6 +16,8 @@ func testResourcePipeline(t *testing.T) {
 	t.Run("FullStack2", testResourcePipelineFullStack2)
 	t.Run("DisableAutoUpdate", testResourcePipelineDisableAutoUpdate)
 	t.Run("LinkedDependencies", testResourcePipelineLinkedDependencies)
+	t.Run("LinkedDependencies", testResourcePipelineLinkedDependencies)
+	t.Run("Missing", testResourcePipelineMissing)
 }
 
 func testResourcePipelineLinkedDependencies(t *testing.T) {
@@ -82,7 +87,7 @@ func testResourcePipelineBasic(t *testing.T) {
 					r.TestCheckResourceAttr(
 						"gocd_pipeline.test-pipeline",
 						"name",
-						"pipeline0-terraform",
+						"pipeline1-terraform",
 					),
 				),
 			},
@@ -124,6 +129,49 @@ func testResourcePipelineFullStack2(t *testing.T) {
 						"gocd_pipeline.test-pipeline",
 						"name",
 						"test-pipeline",
+					),
+				),
+			},
+		},
+	})
+}
+func testResourcePipelineMissing(t *testing.T) {
+
+	r.Test(t, r.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testGocdProviders,
+		CheckDestroy: testGocdPipelineDestroy,
+		Steps: []r.TestStep{
+			{
+				Config: testFile("resource_pipeline.0.rsc.tf"),
+				Check: r.ComposeTestCheckFunc(
+					r.TestCheckResourceAttr(
+						"gocd_pipeline.test-pipeline",
+						"name",
+						"pipeline0-terraform",
+					),
+				),
+			},
+			{
+				Config: testFile("resource_pipeline.0.rsc.tf"),
+				SkipFunc: func() (bool, error) {
+					cfg := gocd.Configuration{
+						Server:   os.Getenv("GOCD_URL"),
+						Username: os.Getenv("GOCD_USERNAME"),
+						Password: os.Getenv("GOCD_PASSWORD"),
+					}
+					c := cfg.Client()
+
+					c.PipelineConfigs.Delete(context.Background(), "pipeline0-terraform")
+					c.PipelineTemplates.Delete(context.Background(), "template0-terraform")
+
+					return false, nil
+				},
+				Check: r.ComposeTestCheckFunc(
+					r.TestCheckResourceAttr(
+						"gocd_pipeline.test-pipeline",
+						"name",
+						"pipeline0-terraform",
 					),
 				),
 			},
