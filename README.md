@@ -1,4 +1,4 @@
-# terraform-provider-gocd 0.1.19
+# terraform-provider-gocd 0.1.22
 
 [![GoDoc](https://godoc.org/github.com/beamly/terraform-provider-gocd/gocd?status.svg)](https://godoc.org/github.com/beamly/terraform-provider-gocd/gocd)
 [![Build Status](https://travis-ci.org/beamly/terraform-provider-gocd.svg?branch=master)](https://travis-ci.org/beamly/terraform-provider-gocd)
