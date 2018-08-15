@@ -3,7 +3,7 @@
 [![GoDoc](https://godoc.org/github.com/beamly/terraform-provider-gocd/gocd?status.svg)](https://godoc.org/github.com/beamly/terraform-provider-gocd/gocd)
 [![Build Status](https://travis-ci.org/beamly/terraform-provider-gocd.svg?branch=master)](https://travis-ci.org/beamly/terraform-provider-gocd)
 [![codecov](https://codecov.io/gh/beamly/terraform-provider-gocd/branch/master/graph/badge.svg)](https://codecov.io/gh/beamly/terraform-provider-gocd)
-[![codebeat badge](https://codebeat.co/badges/8d206e97-e94e-4957-b5da-8060454ba6dc)](https://codebeat.co/projects/github-com-beamly-terraform-provider-gocd-master)
+[![codebeat badge](https://codebeat.co/badges/50ee50a6-46a9-497d-a85b-d929e6f00f65)](https://codebeat.co/projects/github-com-beamly-terraform-provider-gocd-master-0ff3887a-10ea-4399-acfe-b990029412b6)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbeamly%2Fterraform-provider-gocd.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbeamly%2Fterraform-provider-gocd?ref=badge_shield)
 [![Go Report Card](https://goreportcard.com/badge/github.com/beamly/terraform-provider-gocd)](https://goreportcard.com/report/github.com/beamly/terraform-provider-gocd)
 
