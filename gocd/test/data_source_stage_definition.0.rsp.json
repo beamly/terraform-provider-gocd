@@ -1,8 +1,8 @@
 {
   "name": "stage_name",
-  "fetch_materials": false,
-  "clean_working_directory": false,
-  "never_cleanup_artifacts": false,
+  "fetch_materials": true,
+  "clean_working_directory": true,
+  "never_cleanup_artifacts": true,
   "approval": {
     "type": "manual",
     "authorization": {

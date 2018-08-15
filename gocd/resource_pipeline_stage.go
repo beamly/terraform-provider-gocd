@@ -34,9 +34,13 @@ func resourcePipelineStage() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"fetch_materials":         optionalBoolArg,
 			"clean_working_directory": optionalBoolArg,
 			"never_cleanup_artifacts": optionalBoolArg,
+			"fetch_materials": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  true,
+			},
 			"jobs": {
 				Type:             schema.TypeList,
 				Required:         true,
@@ -278,7 +282,6 @@ func resourcePipelineStageUpdate(d *schema.ResourceData, meta interface{}) error
 	}
 
 	(*existing).SetStage(stage)
-
 	if _, err = updateStageContainer(pType, existing, client); err != nil {
 		return err
 	}
@@ -442,9 +445,9 @@ func ingestStageConfig(d *schema.ResourceData, stage *gocd.Stage) {
 		stage.Approval = nil
 	}
 
-	if fetchMaterials := d.Get("fetch_materials").(bool); fetchMaterials {
-		stage.FetchMaterials = fetchMaterials
-	}
+	stage.FetchMaterials = d.Get("fetch_materials").(bool)
+	stage.CleanWorkingDirectory = d.Get("clean_working_directory").(bool)
+	stage.NeverCleanupArtifacts = d.Get("never_cleanup_artifacts").(bool)
 
 	if rJobs, hasJobs := d.GetOk("jobs"); hasJobs {
 		if jobs := decodeConfigStringList(rJobs.([]interface{})); len(jobs) > 0 {

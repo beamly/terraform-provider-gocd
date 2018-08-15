@@ -46,9 +46,9 @@ resource "gocd_pipeline_stage" "test-stage" {
 
   pipeline_template = "${gocd_pipeline_template.test-pipeline.id}"
 
-  clean_working_directory = true
+  clean_working_directory = false
   fetch_materials = false
-  never_cleanup_artifacts = false
+  never_cleanup_artifacts = true
 }
 
 resource "gocd_pipeline_template" "test-pipeline" {
