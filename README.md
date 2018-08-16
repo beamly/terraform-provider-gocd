@@ -1,6 +1,6 @@
 # terraform-provider-gocd 0.1.22
 
-[![Join the chat at https://gitter.im/gocd/gocd](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/beamly/go-gocd?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/beamly/go-gocd](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/beamly/go-gocd?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![GoDoc](https://godoc.org/github.com/beamly/terraform-provider-gocd/gocd?status.svg)](https://godoc.org/github.com/beamly/terraform-provider-gocd/gocd)
 [![Build Status](https://travis-ci.org/beamly/terraform-provider-gocd.svg?branch=master)](https://travis-ci.org/beamly/terraform-provider-gocd)
 [![codecov](https://codecov.io/gh/beamly/terraform-provider-gocd/branch/master/graph/badge.svg)](https://codecov.io/gh/beamly/terraform-provider-gocd)
