@@ -2,9 +2,7 @@ package gocd
 
 import (
 	"context"
-	"github.com/beamly/go-gocd/gocd"
 	r "github.com/hashicorp/terraform/helper/resource"
-	"os"
 	"regexp"
 	"testing"
 )
@@ -155,16 +153,12 @@ func testResourcePipelineMissing(t *testing.T) {
 			{
 				Config: testFile("resource_pipeline.0.rsc.tf"),
 				SkipFunc: func() (bool, error) {
-					cfg := gocd.Configuration{
-						Server:   os.Getenv("GOCD_URL"),
-						Username: os.Getenv("GOCD_USERNAME"),
-						Password: os.Getenv("GOCD_PASSWORD"),
+					if _, _, err := testGocdClient.PipelineConfigs.Delete(context.Background(), "pipeline0-terraform"); err != nil {
+						return false, err
 					}
-					c := cfg.Client()
-
-					c.PipelineConfigs.Delete(context.Background(), "pipeline0-terraform")
-					c.PipelineTemplates.Delete(context.Background(), "template0-terraform")
-
+					if _, _, err := testGocdClient.PipelineTemplates.Delete(context.Background(), "template0-terraform"); err != nil {
+						return false, err
+					}
 					return false, nil
 				},
 				Check: r.ComposeTestCheckFunc(

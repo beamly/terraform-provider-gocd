@@ -3,13 +3,11 @@ package gocd
 import (
 	"context"
 	"fmt"
-	"github.com/beamly/go-gocd/gocd"
 	r "github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
-	"os"
 	"testing"
 )
 
@@ -83,15 +81,9 @@ func testResourcePipelineTemplateMissing(t *testing.T) {
 			{
 				Config: testFile("resource_pipeline_template.0.rsc.tf"),
 				SkipFunc: func() (bool, error) {
-					cfg := gocd.Configuration{
-						Server:   os.Getenv("GOCD_URL"),
-						Username: os.Getenv("GOCD_USERNAME"),
-						Password: os.Getenv("GOCD_PASSWORD"),
+					if _, _, err := testGocdClient.PipelineTemplates.Delete(context.Background(), "template0-terraform"); err != nil {
+						return false, err
 					}
-					c := cfg.Client()
-
-					c.PipelineTemplates.Delete(context.Background(), "template0-terraform")
-
 					return false, nil
 				},
 				Check: r.ComposeTestCheckFunc(

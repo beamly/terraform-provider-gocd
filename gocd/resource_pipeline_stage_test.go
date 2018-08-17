@@ -8,7 +8,6 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/stretchr/testify/assert"
-	"os"
 	"testing"
 )
 
@@ -194,6 +193,9 @@ func testResourceStageNeverCleanupArtefacts(t *testing.T) {
 
 func testCheckPipelineStageExists(resource string, cleanWorkingDir bool, fetchMaterials bool, neverCleanupArtifacts bool) r.TestCheckFunc {
 	return func(s *terraform.State) error {
+		var pipeline *gocd.PipelineTemplate
+		var err error
+
 		rcs := s.RootModule().Resources
 		rs, ok := rcs[resource]
 		if !ok {
@@ -204,24 +206,19 @@ func testCheckPipelineStageExists(resource string, cleanWorkingDir bool, fetchMa
 			return fmt.Errorf("No pipeline stage name is set")
 		}
 
-		cfg := gocd.Configuration{
-			Server:   os.Getenv("GOCD_URL"),
-			Username: os.Getenv("GOCD_USERNAME"),
-			Password: os.Getenv("GOCD_PASSWORD"),
+		if pipeline, _, err = testGocdClient.PipelineTemplates.Get(context.Background(), "test-pipeline-template"); err != nil {
+			return err
 		}
 
-		c := cfg.Client()
-		p, _, _ := c.PipelineTemplates.Get(context.Background(), "test-pipeline-template")
-
-		if p.Stages[0].CleanWorkingDirectory != cleanWorkingDir {
+		if pipeline.Stages[0].CleanWorkingDirectory != cleanWorkingDir {
 			return fmt.Errorf("clean_working_directory property not set to %t", cleanWorkingDir)
 		}
 
-		if p.Stages[0].FetchMaterials != fetchMaterials {
+		if pipeline.Stages[0].FetchMaterials != fetchMaterials {
 			return fmt.Errorf("fetch_materials property not set to %t", fetchMaterials)
 		}
 
-		if p.Stages[0].NeverCleanupArtifacts != neverCleanupArtifacts {
+		if pipeline.Stages[0].NeverCleanupArtifacts != neverCleanupArtifacts {
 			return fmt.Errorf("never_cleanup_artifacts property not set to %t", neverCleanupArtifacts)
 		}
 
@@ -230,15 +227,13 @@ func testCheckPipelineStageExists(resource string, cleanWorkingDir bool, fetchMa
 }
 
 func testGocdStageDestroy(s *terraform.State) error {
-	client := testGocdProvider.Meta().(*gocd.Client)
-
 	root := s.RootModule()
 	for _, rs := range root.Resources {
 		if rs.Type != "gocd_pipeline_stage" {
 			continue
 		}
 
-		_, _, err := client.PipelineTemplates.Get(context.Background(), rs.Primary.ID)
+		_, _, err := testGocdClient.PipelineTemplates.Get(context.Background(), rs.Primary.ID)
 		//stage := pt.GetStage()
 		if err == nil {
 			return fmt.Errorf("still exists")

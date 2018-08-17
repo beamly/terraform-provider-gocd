@@ -2,6 +2,7 @@ package gocd
 
 import (
 	"fmt"
+	"github.com/beamly/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
@@ -16,6 +17,7 @@ import (
 var (
 	testGocdProviders map[string]terraform.ResourceProvider
 	testGocdProvider  *schema.Provider
+	testGocdClient    *gocd.Client
 )
 
 type TestStepJSONComparison struct {
@@ -32,6 +34,13 @@ func init() {
 		"gocd": testGocdProvider,
 	}
 
+	cfg := gocd.Configuration{
+		Server:   os.Getenv("GOCD_URL"),
+		Username: os.Getenv("GOCD_USERNAME"),
+		Password: os.Getenv("GOCD_PASSWORD"),
+	}
+
+	testGocdClient = cfg.Client()
 }
 
 func TestProvider(t *testing.T) {
