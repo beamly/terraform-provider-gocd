@@ -1,4 +1,4 @@
-# terraform-provider-gocd 0.1.22
+# terraform-provider-gocd 0.1.23
 
 [![Join the chat at https://gitter.im/beamly/go-gocd](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/beamly/go-gocd?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![GoDoc](https://godoc.org/github.com/beamly/terraform-provider-gocd/gocd?status.svg)](https://godoc.org/github.com/beamly/terraform-provider-gocd/gocd)
@@ -36,7 +36,6 @@ __NOTE__: Given the requirements by hashicorp for SLA's to be set for importing 
      - [`gocd_environment_association`](#gocd_environment_association)
 
 ## Data
-
 
  - [`gocd_task_definition`](#gocd_task_definition)
  - [`gocd_job_definition`](#gocd_job_definition)
@@ -180,7 +179,8 @@ resource "gocd_pipeline" "build" {
  - `group` - (Required) The name of the pipeline group to deploy into.
  - `materials` - (Required) The list of materials to be used by pipeline. At least one material must be specified. Each `materials` block supports fields documented below.
  - `label_template` - (Optional)  The label template to customise the pipeline instance label.
- - `enable_pipeline_locking` - (Optional)  Whether pipeline is locked to run single instance or not.
+ - `enable_pipeline_locking` - (Optional, Deprecated)  Whether pipeline is locked to run single instance or not. See notes below.
+ - `lock_behavior` - (Optional) Whether pipeline is locked to run single instance. `none` (never lock), `lockOnFailure` (only lock after a failure) or `unlockWhenFinished` (lock whilst running, then always unlock). See notes below.
  - `template` - (Optional)  The name of the template used by pipeline. A `gocd_pipeline_stage` can not be assigned to a `gocd_pipeline` it `template` is set.
  - `parameters` - (Optional) A [map](https://www.terraform.io/docs/configuration/variables.html#maps) of parameters to be used for substitution in a pipeline or pipeline template.
  - `environment_variables` - (Optional) The list of environment variables that will be passed to all tasks (commands) that are part of this pipeline. Each `environment_variables` block supports fields documented below.
@@ -197,6 +197,13 @@ Type `materials` block supports:
  - `type` (Required) The type of a material. Can be one of git, dependency.
  - `attributes` (Required) A [map](https://www.terraform.io/docs/configuration/variables.html#maps) of attributes for each material type. See the [GoCD API Documentation](https://api.gocd.org/current/#the-pipeline-material-object) for each material type attributes.
 
+##### Locking 
+
+Locking behaviour is now controlled by 2 properties: `lock_behavior` and `enable_pipeline_locking`. A plan may not include both.
+
+The GoCD Pipeline API changed from v17.12.0 to use a 3-state `lock_behaviour` property instead of the old boolean `enable_pipeline_locking`. You may still use `enable_pipeline_locking` in your plan, this will be mapped to `lock_behaviour = 'none' or 'lockOnFailure'` if you use a later version of GoCD.
+
+You may also use `lock_behaviour = 'lockOnFailure' or 'none'` in plans run on older versions of GoCD. These will be mapped back to `enable_pipeline_locking = true or false`. You will however not be able to use `lock_behavior = 'unlockWhenFinished'` on older versions; this value will not be persisted, and you will find replanning will always give you a diff.
 
 #### Attributes Reference
 

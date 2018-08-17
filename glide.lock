@@ -1,5 +1,5 @@
 hash: 86911cf3cb8634a923b686003356702edd089b57a3fe4fd6db5b6630604c739b
-updated: 2018-06-11T11:14:28.438992+01:00
+updated: 2018-08-16T21:59:47.937732235+01:00
 imports:
 - name: github.com/agext/levenshtein
   version: 5f10fee965225ac1eecdc234c09daf5cd9e7f7b6
@@ -47,7 +47,7 @@ imports:
   - service/s3
   - service/sts
 - name: github.com/beamly/go-gocd
-  version: 22c4d041ca9ce74960c6a10e8ab63bf7d05e87a3
+  version: 5bad04c88a6bb9a687ddbc65d804c5b8eca7bb55
   subpackages:
   - gocd
 - name: github.com/bgentry/go-netrc
@@ -123,7 +123,7 @@ imports:
 - name: github.com/hashicorp/logutils
   version: 0dc08b1671f34c4250ce212759ebd880f743d883
 - name: github.com/hashicorp/terraform
-  version: 41e50bd32a8825a84535e353c3674af8ce799161
+  version: 6dfc4d748de9cda23835bc5704307ed45e839622
   subpackages:
   - config
   - config/configschema
@@ -191,7 +191,7 @@ imports:
   subpackages:
   - diffmatchpatch
 - name: github.com/sirupsen/logrus
-  version: ea8897e79973357ba785ac2533559a6297e83c44
+  version: e4b0c6d7829bcf64435536c4a88f4088a3c76203
 - name: github.com/ulikunitz/xz
   version: 0c6b41e72360850ca4f98dc341fd999726ea007f
   subpackages:
