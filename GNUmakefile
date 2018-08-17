@@ -22,18 +22,17 @@ script: testacc
 after_failure: cleanup
 
 after_success: report_coverage cleanup
-	go get -u github.com/goreleaser/goreleaser
 
-deploy_on_tag:
+prepare_goreleaser:
+	go get github.com/goreleaser/goreleaser
 	git clean -fd
 	go get
-	goreleaser
 
-deploy_on_develop:
-	git clean -fd
-	go get
-	goreleaser --snapshot
+deploy_on_tag: prepare_goreleaser
+	goreleaser --debug
 
+deploy_on_develop: prepare_goreleaser
+	goreleaser --debug --rm-dist --snapshot
 
 ## General Targets
 teardown-test-gocd:
