@@ -1,9 +1,7 @@
 language: go
 go:
-  - 1.9.x
   - 1.10.x
-#  - release
-#  - tip
+  - 1.11.x
 
 
 services:
@@ -15,10 +13,9 @@ addons:
     - rpm
 
 matrix:
-#  allow_failures:
-#    - go: release
-#    - go: tip
   fast_finish: true
+  allow_failures:
+    - go: 1.11.x
 
 env:
   matrix:
