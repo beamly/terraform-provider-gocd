@@ -25,12 +25,12 @@ after_success: report_coverage cleanup
 	go get -u github.com/goreleaser/goreleaser
 
 deploy_on_tag:
-	gem install --no-ri --no-rdoc fpm
+	git clean -fd
 	go get
 	goreleaser
 
 deploy_on_develop:
-	gem install --no-ri --no-rdoc fpm
+	git clean -fd
 	go get
 	goreleaser --snapshot
 

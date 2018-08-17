@@ -40,6 +40,21 @@ func resourcePipeline() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Computed: true,
+				Deprecated: "The property enable_pipeline_locking was changed to lock_behavior. " +
+					"The old values of true and false in enable_pipeline_locking were changed to lockOnFailure and none " +
+					"respectively in lock_behavior. A new value of unlockWhenFinished was introduced.",
+				ConflictsWith: []string{"lock_behavior"},
+			},
+			"lock_behavior": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"none",
+					"lockOnFailure",
+					"unlockWhenFinished",
+				}, true),
+				ConflictsWith: []string{"enable_pipeline_locking"},
 			},
 			"template": {
 				Type:     schema.TypeString,
@@ -320,6 +335,13 @@ func extractPipeline(d *schema.ResourceData) (p *gocd.Pipeline, err error) {
 
 	if pipelineLocking, hasPipelineLocking := d.GetOk("enable_pipeline_locking"); hasPipelineLocking {
 		p.EnablePipelineLocking = pipelineLocking.(bool)
+		p.LockBehavior = "none"
+		if p.EnablePipelineLocking {
+			p.LockBehavior = "lockOnFailure"
+		}
+	} else if lockBehavior, hasLockBehavior := d.GetOk("lock_behavior"); hasLockBehavior {
+		p.LockBehavior = lockBehavior.(string)
+		p.EnablePipelineLocking = p.LockBehavior != "none"
 	}
 
 	p.Name = d.Get("name").(string)
@@ -441,7 +463,18 @@ func readPipeline(d *schema.ResourceData, p *gocd.Pipeline, err error) error {
 		d.Set("label_template", p.LabelTemplate)
 	}
 
-	d.Set("enable_pipeline_locking", p.EnablePipelineLocking)
+	d.Set("lock_behavior", p.LockBehavior)
+	if p.LockBehavior == "none" {
+		d.Set("enable_pipeline_locking", false)
+	} else if p.LockBehavior != "" {
+		d.Set("enable_pipeline_locking", true)
+	} else {
+		d.Set("enable_pipeline_locking", p.EnablePipelineLocking)
+		if p.EnablePipelineLocking {
+			d.Set("lock_behavior", "lockOnFailure")
+		}
+	}
+
 	d.Set(
 		"environment_variables",
 		ingestEnvironmentVariables(p.EnvironmentVariables),
