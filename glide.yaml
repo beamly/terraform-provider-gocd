@@ -6,7 +6,7 @@ owners:
   email: drew.sonne@gmail.com
 import:
 - package: github.com/beamly/go-gocd
-  version: ^0.6.16
+  version: ^0.7.1
   subpackages:
   - gocd
 - package: github.com/hashicorp/terraform

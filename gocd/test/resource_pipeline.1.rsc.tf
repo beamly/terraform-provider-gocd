@@ -6,7 +6,7 @@ resource "gocd_pipeline" "test-pipeline" {
   name                    = "pipeline1-terraform"
   group                   = "testing"
   template                = "${gocd_pipeline_template.test-pipeline.name}"
-  enable_pipeline_locking = true
+  lock_behavior           = "lockOnFailure"
   label_template          = "build-$${COUNT}"
 
   materials = [

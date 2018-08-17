@@ -16,7 +16,7 @@ services:
     environment:
       AGENT_AUTO_REGISTER_KEY: terraform-testing
   gocd-agent:
-   image: gocd/gocd-agent-ubuntu-16.04:v17.10.0
+   image: gocd/gocd-agent-ubuntu-16.04:v18.7.0
    links:
      - gocd-server:server
    depends_on:
