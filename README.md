@@ -76,6 +76,7 @@ Task definition as defined in the [GoCD API](https://api.gocd.org/current/#the-t
  - `stage` - (Required) The name of the stage to fetch artifacts from.
  - `job`  - (Required) The name of the job to fetch artifacts from.
  - `source` - (Required) The path of the artifact directory or file of a specific job, relative to the sandbox directory. If the directory or file does not exist, the job is failed.
+ - `artifact_origin` - (Required from version 18.7.0 of GoCD Server) The origin of the fetched artifact, can be set to "gocd" or "external".
  - `is_source_a_file` - (Optional) Whether source is a file or directory.
  - `destination` - (Optional) The path of the directory where the artifact is fetched to.
 
