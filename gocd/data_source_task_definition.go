@@ -7,6 +7,7 @@ import (
 	"github.com/beamly/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/hashcode"
 	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform/helper/validation"
 	"strconv"
 )
 
@@ -84,6 +85,14 @@ func dataSourceGocdTaskDefinition() *schema.Resource {
 			"pipeline": {
 				Type:     schema.TypeString,
 				Optional: true,
+			},
+			"artifact_origin": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"gocd",
+					"external",
+				}, true),
 			},
 			"configuration": {
 				Type:     schema.TypeList,
@@ -184,6 +193,10 @@ func dataSourceGocdFetchTemplate(t *gocd.Task, d *schema.ResourceData) {
 
 	if j, ok := d.GetOk("job"); ok {
 		t.Attributes.Job = j.(string)
+	}
+
+	if ao, ok := d.GetOk("artifact_origin"); ok {
+		t.Attributes.ArtifactOrigin = ao.(string)
 	}
 
 	if isaf, ok := d.GetOk("is_source_a_file"); ok && isaf.(bool) {
