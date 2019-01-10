@@ -2,7 +2,6 @@ package gocd
 
 import (
 	"crypto/tls"
-	"fmt"
 	"github.com/beamly/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/logging"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -10,7 +9,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"runtime"
 	"strings"
 )
 
@@ -137,8 +135,9 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	hClient.Transport = logging.NewTransport("GoCD", hClient.Transport)
 	gc := gocd.NewClient(cfg, hClient)
 
-	versionString := terraform.VersionString()
-	gc.UserAgent = fmt.Sprintf("(%s %s) Terraform/%s", runtime.GOOS, runtime.GOARCH, versionString)
+	// No-longer supported by go-gocd
+	// versionString := terraform.VersionString()
+	// gc.params.UserAgent = fmt.Sprintf("(%s %s) Terraform/%s", runtime.GOOS, runtime.GOARCH, versionString)
 
 	return gc, nil
 

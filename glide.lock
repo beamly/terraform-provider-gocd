@@ -1,5 +1,5 @@
-hash: a5637e308a05d0427fed6be01671d35afaa6cbaadb232ef81fb5e7ed464434f3
-updated: 2018-10-31T15:30:16.735887519Z
+hash: 5f29253dbb9952338e41ad3de8be711f2caedfcf0fd5053070b2cf155bed1440
+updated: 2019-01-10T15:22:28.602263Z
 imports:
 - name: github.com/agext/levenshtein
   version: 5f10fee965225ac1eecdc234c09daf5cd9e7f7b6
@@ -50,7 +50,7 @@ imports:
   - service/s3
   - service/sts
 - name: github.com/beamly/go-gocd
-  version: ab316b349b8fc15b56b20398bc74bc4acb830738
+  version: d241d381c00e1b5670a179cdcc927192a130b37b
   subpackages:
   - gocd
 - name: github.com/bgentry/go-netrc
@@ -124,7 +124,7 @@ imports:
 - name: github.com/hashicorp/logutils
   version: a335183dfd075f638afcc820c90591ca3c97eba6
 - name: github.com/hashicorp/terraform
-  version: 17850e9a55d33c43d7c31fd6ac122ba97a51d899
+  version: ac4fff416318bf0915a0ab80e062a99ef3724334
   subpackages:
   - config
   - config/configschema
@@ -182,7 +182,7 @@ imports:
 - name: github.com/oklog/run
   version: 6934b124db28979da51d3470dadfa34d73d72652
 - name: github.com/pkg/errors
-  version: 645ef00459ed84a119197bfb8d8205042c6df63d
+  version: ba968bfe8b2f7e042a574c888954fccecfa385b4
 - name: github.com/posener/complete
   version: 3ef9b31a6a0613ae832e7ecf208374027c3b2343
   subpackages:
@@ -194,7 +194,7 @@ imports:
   subpackages:
   - diffmatchpatch
 - name: github.com/sirupsen/logrus
-  version: fd2308367ebd427ec910c1ac82f3805db3de1918
+  version: eef6b768ab01a0598a0a6db97bad2a37d31df1d1
 - name: github.com/ulikunitz/xz
   version: 590df8077fbcb06ad62d7714da06c00e5dd2316d
   subpackages:
@@ -290,6 +290,6 @@ testImports:
   subpackages:
   - difflib
 - name: github.com/stretchr/testify
-  version: f35b8ab0b5a2cef36673838d662e249dd9c94686
+  version: ffdc059bfe9ce6a4e144ba849dbedead332c6053
   subpackages:
   - assert
