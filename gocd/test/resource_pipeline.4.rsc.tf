@@ -20,13 +20,11 @@ resource "gocd_pipeline" "test-pipeline" {
         branch = "master"
 
         //        auto_update = true
-        filter {
-          ignore = [
-            "gocd-agents/Dockerfile.base",
-            "Makefile",
-            "gocd-agents/files/base/",
-          ]
-        }
+        filter = [
+          "gocd-agents/Dockerfile.base",
+          "Makefile",
+          "gocd-agents/files/base/",
+        ]
       }
     },
   ]

@@ -200,13 +200,11 @@ resource "gocd_pipeline" "test-pipeline" {
       attributes {
         url = "git@github.com:company/gocd-ecsagents.git"
 
-        filter = {
-          ignore = [
-            "company-gocd-agents/Dockerfile.base",
-            "Makefile",
-            "company-gocd-agents/files/base/",
-          ]
-        }
+        filter = [
+          "company-gocd-agents/Dockerfile.base",
+          "Makefile",
+          "company-gocd-agents/files/base/",
+        ]
 
         invert_filter = true
         branch        = "master"

@@ -18,12 +18,10 @@ resource "gocd_pipeline" "test-pipeline" {
         branch      = "feature/my-addition"
         destination = "gocd-dir"
 
-        filter {
-          ignore = [
-            "one",
-            "two",
-          ]
-        }
+        filter = [
+          "one",
+          "two",
+        ]
       }
     },
   ]

@@ -3,10 +3,9 @@ package gocd
 import (
 	"context"
 	"github.com/beamly/go-gocd/gocd"
-	"strings"
-
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/helper/validation"
+	"strings"
 )
 
 func resourcePipeline() *schema.Resource {
@@ -179,30 +178,16 @@ func resourcePipeline() *schema.Resource {
 										Optional: true,
 									},
 									"filter": {
-										Type:     schema.TypeSet,
+										Type:     schema.TypeList,
 										Optional: true,
-										Computed: true,
-										MaxItems: 1,
-										Elem:     materialFilterResource(),
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
 									},
 								},
 							},
 						},
 					},
-				},
-			},
-		},
-	}
-}
-
-func materialFilterResource() *schema.Resource {
-	return &schema.Resource{
-		Schema: map[string]*schema.Schema{
-			"ignore": {
-				Type:     schema.TypeList,
-				Required: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
 				},
 			},
 		},
@@ -383,18 +368,14 @@ func extractPipelineMaterials(rawMaterials []interface{}) ([]gocd.Material, erro
 
 		mat := rawMaterial.(map[string]interface{})
 		m.Ingest(mat)
+
 		if mattr1, ok1 := mat["attributes"].([]interface{}); ok1 {
 			if mattr2, ok2 := mattr1[0].(map[string]interface{}); ok2 {
 				if filterI, ok3 := mattr2["filter"]; ok3 {
-					if filterSet, ok4 := filterI.(*schema.Set); ok4 {
-						filters := filterSet.List()
-						if len(filters) > 0 {
-							if filter, ok5 := filters[0].(map[string]interface{}); ok5 {
-								if ignore, ok6 := filter["ignore"]; ok6 {
-									mattr2["filter"] = map[string]interface{}{
-										"ignore": decodeConfigStringList(ignore.([]interface{})),
-									}
-								}
+					if ignore, ok4 := filterI.([]interface{}); ok4 {
+						if len(ignore) > 0 {
+							mattr2["filter"] = map[string]interface{}{
+								"ignore": ignore,
 							}
 						}
 					}
@@ -413,18 +394,15 @@ func readPipelineMaterials(d *schema.ResourceData, materials []gocd.Material) er
 	materialImports := make([]interface{}, len(materials))
 	for i, m := range materials {
 		attrs := m.Attributes.GenerateGeneric()
-		filterSet := schema.NewSet(
-			schema.HashResource(materialFilterResource()),
-			[]interface{}{},
-		)
+
 		if filters, ok1 := attrs["filter"]; ok1 {
 			if filterI, ok2 := filters.(map[string]interface{}); ok2 {
-				if len(filterI) > 0 {
-					filterSet.Add(filterI)
+				if ignore, ok3 := filterI["ignore"]; ok3 {
+					attrs["filter"] = ignore
 				}
-				attrs["filter"] = filterSet
 			}
 		}
+
 		materialImports[i] = map[string]interface{}{
 			"type":       m.Type,
 			"attributes": []interface{}{attrs},

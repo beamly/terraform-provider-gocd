@@ -18,12 +18,10 @@ resource "gocd_pipeline" "test-pipeline" {
         destination = "gocd-dir"
 
         //        auto_update = true
-        filter {
-          ignore = [
-            "one",
-            "two",
-          ]
-        }
+        filter = [
+          "one",
+          "two",
+        ]
       }
     },
   ]

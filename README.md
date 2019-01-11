@@ -168,6 +168,7 @@ resource "gocd_pipeline" "build" {
       attributes {
         name = "terraform-provider-gocd"
         url = "https://github.com/beamly/terraform-provider-gocd.git"
+        filter = ["file1", "file2"]
       }
     }
   ]
@@ -196,7 +197,7 @@ The `environment_variables` block supports:
 Type `materials` block supports:
 
  - `type` (Required) The type of a material. Can be one of git, dependency.
- - `attributes` (Required) A [map](https://www.terraform.io/docs/configuration/variables.html#maps) of attributes for each material type. See the [GoCD API Documentation](https://api.gocd.org/current/#the-pipeline-material-object) for each material type attributes.
+ - `attributes` (Required) A [map](https://www.terraform.io/docs/configuration/variables.html#maps) of attributes for each material type. See the [GoCD API Documentation](https://api.gocd.org/current/#the-pipeline-material-object) for each material type attributes. Note: any `filter` should be specified as a list of files to ignore (rather than an map containing an `ignore` attribute).
 
 ##### Locking 
 
