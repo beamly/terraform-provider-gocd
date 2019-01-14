@@ -2,12 +2,12 @@
 # CMD terraform import gocd_pipeline_template.gocd-image-build-deploy "gocd-image-build-deploy"
 resource "gocd_pipeline_template" "gocd-image-build-deploy" {
   name = "gocd-image-build-deploy"
+  stages = ["${data.gocd_stage_definition.build.json}","${data.gocd_stage_definition.clean.json}","${data.gocd_stage_definition.deploy.json}"]
 }
 
 # CMD terraform import gocd_pipeline_stage.build "build"
-resource "gocd_pipeline_stage" "build" {
+data "gocd_stage_definition" "build" {
   name              = "build"
-  pipeline_template = "${gocd_pipeline_template.gocd-image-build-deploy.name}"
   fetch_materials   = true
 
   jobs = [
@@ -57,9 +57,8 @@ data "gocd_task_definition" "gocd-image-build-deploy_build_build_0" {
 }
 
 # CMD terraform import gocd_pipeline_stage.clean "clean"
-resource "gocd_pipeline_stage" "clean" {
+data "gocd_stage_definition" "clean" {
   name              = "clean"
-  pipeline_template = "${gocd_pipeline_template.gocd-image-build-deploy.name}"
   fetch_materials   = true
 
   jobs = [
@@ -96,9 +95,8 @@ data "gocd_task_definition" "gocd-image-build-deploy_clean_clean_0" {
 }
 
 # CMD terraform import gocd_pipeline_stage.deploy "deploy"
-resource "gocd_pipeline_stage" "deploy" {
+data "gocd_stage_definition" "deploy" {
   name              = "deploy"
-  pipeline_template = "${gocd_pipeline_template.gocd-image-build-deploy.name}"
   fetch_materials   = true
 
   jobs = [
@@ -165,7 +163,7 @@ resource "gocd_pipeline" "terraform-image" {
 
       attributes {
         pipeline = "${gocd_pipeline.test-pipeline.name}"
-        stage    = "${gocd_pipeline_stage.clean.name}"
+        stage    = "${data.gocd_stage_definition.clean.name}"
 
         //        auto_update = true
       }
@@ -214,3 +212,26 @@ resource "gocd_pipeline" "test-pipeline" {
     },
   ]
 }
+
+data "gocd_stage_definition" "test-stage" {
+  name = "test"
+  jobs = [
+    "${data.gocd_job_definition.test-job.json}"
+  ]
+}
+
+data "gocd_job_definition" "test-job" {
+  name = "test"
+  tasks = [
+    "${data.gocd_task_definition.test.json}"
+  ]
+}
+data "gocd_task_definition" "test" {
+  type = "exec"
+  command = "echo"
+  arguments = [
+    "hello",
+    "world",
+  ]
+}
+

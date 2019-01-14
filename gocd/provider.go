@@ -24,16 +24,15 @@ func Provider() terraform.ResourceProvider {
 func SchemaProvider() *schema.Provider {
 	return &schema.Provider{
 		DataSourcesMap: map[string]*schema.Resource{
-			//"gocd_stage_definition": dataSourceGocdStageTemplate(),
-			"gocd_job_definition":  dataSourceGocdJobTemplate(),
-			"gocd_task_definition": dataSourceGocdTaskDefinition(),
+			"gocd_stage_definition": dataSourceGocdStageDefinition(),
+			"gocd_job_definition":   dataSourceGocdJobTemplate(),
+			"gocd_task_definition":  dataSourceGocdTaskDefinition(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"gocd_environment":             resourceEnvironment(),
 			"gocd_environment_association": resourceEnvironmentAssociation(),
 			"gocd_pipeline_template":       resourcePipelineTemplate(),
 			"gocd_pipeline":                resourcePipeline(),
-			"gocd_pipeline_stage":          resourcePipelineStage(),
 		},
 		Schema: map[string]*schema.Schema{
 			"baseurl": {

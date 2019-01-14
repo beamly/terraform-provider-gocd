@@ -11,17 +11,17 @@ resource "gocd_pipeline" "pipe-A" {
       url = "github.com/gocd/gocd"
     }
   }]
+
+  stages = ["${data.gocd_stage_definition.stage-A.json}", "${data.gocd_stage_definition.stage-B.json}"]
 }
 
-resource "gocd_pipeline_stage" "stage-A" {
+data "gocd_stage_definition" "stage-A" {
   name     = "stage-A"
-  pipeline = "${gocd_pipeline.pipe-A.name}"
   jobs     = ["${data.gocd_job_definition.list.json}"]
 }
 
-resource "gocd_pipeline_stage" "stage-B" {
+data "gocd_stage_definition" "stage-B" {
   name     = "stage-B"
-  pipeline = "${gocd_pipeline.pipe-A.name}"
   jobs     = ["${data.gocd_job_definition.list.json}"]
 }
 
@@ -44,7 +44,14 @@ resource "gocd_pipeline" "pipe-B" {
     type = "dependency"
     attributes {
       pipeline = "${gocd_pipeline.pipe-A.name}"
-      stage    = "${gocd_pipeline_stage.stage-B.name}"
+      stage    = "${data.gocd_stage_definition.stage-B.name}"
     }
   }]
+  stages = ["${data.gocd_stage_definition.stage-C.json}"]
 }
+
+data "gocd_stage_definition" "stage-C" {
+  name     = "stage-C"
+  jobs     = ["${data.gocd_job_definition.list.json}"]
+}
+

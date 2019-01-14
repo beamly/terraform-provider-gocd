@@ -13,6 +13,8 @@ resource "gocd_pipeline" "test-pipeline3-upstream" {
       //      auto_update = true
     }
   }]
+
+  stages = ["${data.gocd_stage_definition.test.json}"]
 }
 
 resource "gocd_pipeline" "test-pipeline3" {
@@ -32,12 +34,13 @@ resource "gocd_pipeline" "test-pipeline3" {
       }
     },
   ]
+
+  stages = ["${data.gocd_stage_definition.test.json}"]
 }
 
 # CMD terraform import gocd_pipeline_stage.test "test"
-resource "gocd_pipeline_stage" "test" {
+data "gocd_stage_definition" "test" {
   name            = "test"
-  pipeline        = "${gocd_pipeline.test-pipeline3.name}"
   fetch_materials = true
 
   jobs = [

@@ -2,6 +2,7 @@ package gocd
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"github.com/beamly/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -13,6 +14,7 @@ const PLACEHOLDER_NAME = "TERRAFORM_PLACEHOLDER"
 func resourcePipelineTemplate() *schema.Resource {
 	return &schema.Resource{
 		Create: resourcePipelineTemplateCreate,
+		Update: resourcePipelineTemplateUpdate,
 		Read:   resourcePipelineTemplateRead,
 		Delete: resourcePipelineTemplateDelete,
 		Exists: resourcePipelineTemplateExists,
@@ -28,6 +30,15 @@ func resourcePipelineTemplate() *schema.Resource {
 			"version": {
 				Type:     schema.TypeString,
 				Computed: true,
+			},
+			"stages": {
+				Type:     schema.TypeList,
+				MinItems: 1,
+				Required: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				DiffSuppressFunc: supressJSONDiffs,
 			},
 		},
 	}
@@ -67,19 +78,36 @@ func resourcePipelineTemplateCreate(d *schema.ResourceData, meta interface{}) er
 		name = ptname.(string)
 	}
 
-	//stages := extractStages(d)
-	// As a pipeline must be created with a stage, when we first create the pipeline, add a dummy placeholder stage.
-	// This will be cleaned up by any stage creation actions.
-
-	placeholderStages := []*gocd.Stage{
-		stagePlaceHolder(),
-	}
 	client := meta.(*gocd.Client)
 	client.Lock()
 	defer client.Unlock()
 
-	pt, _, err := client.PipelineTemplates.Create(context.Background(), name, placeholderStages)
-	return readPipelineTemplate(d, pt, err)
+	pt := gocd.PipelineTemplate{}
+	resourcePipelineTemplateParseStages(d, &pt)
+
+	pt2, _, err := client.PipelineTemplates.Create(context.Background(), name, pt.Stages)
+	return readPipelineTemplate(d, pt2, err)
+}
+
+func resourcePipelineTemplateUpdate(d *schema.ResourceData, meta interface{}) error {
+	var name string
+	if ptname, hasName := d.GetOk("name"); hasName {
+		name = ptname.(string)
+	}
+
+	client := meta.(*gocd.Client)
+	client.Lock()
+	defer client.Unlock()
+
+	pt := gocd.PipelineTemplate{
+		Name:    name,
+		Version: d.Get("version").(string),
+	}
+
+	resourcePipelineTemplateParseStages(d, &pt)
+
+	pt2, _, err := client.PipelineTemplates.Update(context.Background(), name, &pt)
+	return readPipelineTemplate(d, pt2, err)
 }
 
 func resourcePipelineTemplateRead(d *schema.ResourceData, meta interface{}) error {
@@ -129,6 +157,36 @@ func readPipelineTemplate(d *schema.ResourceData, p *gocd.PipelineTemplate, err 
 
 	d.SetId(p.Name)
 	d.Set("version", p.Version)
+
+	var s string
+	if stages := p.Stages; len(stages) > 0 {
+		stringStages := []string{}
+		for _, stage := range stages {
+			if s, err = stage.JSONString(); err != nil {
+				return err
+			}
+			stringStages = append(stringStages, s)
+		}
+
+		d.Set("stages", stringStages)
+	}
+
+	return nil
+}
+
+func resourcePipelineTemplateParseStages(d *schema.ResourceData, pt *gocd.PipelineTemplate) error {
+
+	if rStages, hasStages := d.GetOk("stages"); hasStages {
+		if stages := decodeConfigStringList(rStages.([]interface{})); len(stages) > 0 {
+			for _, rawstage := range stages {
+				stage := &gocd.Stage{}
+				if err := json.Unmarshal([]byte(rawstage), stage); err != nil {
+					return err
+				}
+				pt.Stages = append(pt.Stages, stage)
+			}
+		}
+	}
 
 	return nil
 }

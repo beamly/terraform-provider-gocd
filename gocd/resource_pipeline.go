@@ -2,6 +2,7 @@ package gocd
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/beamly/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/helper/validation"
@@ -190,6 +191,16 @@ func resourcePipeline() *schema.Resource {
 					},
 				},
 			},
+			"stages": {
+				Type:          schema.TypeList,
+				MinItems:      1,
+				Optional:      true,
+				ConflictsWith: []string{"template"},
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				DiffSuppressFunc: supressJSONDiffs,
+			},
 		},
 	}
 }
@@ -204,18 +215,21 @@ func resourcePipelineCreate(d *schema.ResourceData, meta interface{}) (err error
 	if p, err = extractPipeline(d); err != nil {
 		return
 	}
-	// GoCD does not allow pipelines to have _no_ stages. As this provider has split stages and pipelines into separate
-	// resources, we need to add a place holder stage if there are no stages yet configured and we're not using a
-	// template.
-	if (p.Stages == nil || len(p.Stages) == 0) && p.Template == "" {
-		p.Stages = []*gocd.Stage{
-			stagePlaceHolder(),
-		}
-	}
 
 	group := d.Get("group").(string)
 	pc, _, err := client.PipelineConfigs.Create(context.Background(), group, p)
 	return readPipeline(d, pc, err)
+}
+
+func resourcePipelineParseStages(stages []string, doc *gocd.Pipeline) error {
+	for _, rawstage := range stages {
+		stage := &gocd.Stage{}
+		if err := json.Unmarshal([]byte(rawstage), stage); err != nil {
+			return err
+		}
+		doc.Stages = append(doc.Stages, stage)
+	}
+	return nil
 }
 
 func resourcePipelineRead(d *schema.ResourceData, meta interface{}) error {
@@ -246,8 +260,6 @@ func resourcePipelineUpdate(d *schema.ResourceData, meta interface{}) (err error
 		d.Set("name", name)
 	}
 
-	templateToPipeline, templateChange := isSwitchToTemplate(d)
-
 	if p, err = extractPipeline(d); err != nil {
 		return err
 	}
@@ -258,14 +270,6 @@ func resourcePipelineUpdate(d *schema.ResourceData, meta interface{}) (err error
 	defer client.Unlock()
 
 	existing, _, err := client.PipelineConfigs.Get(ctx, name)
-
-	if templateChange && !templateToPipeline {
-		p.Stages = nil
-	} else if templateToPipeline {
-		p.Stages = []*gocd.Stage{stagePlaceHolder()}
-	} else {
-		p.Stages = existing.Stages
-	}
 
 	p.Version = existing.Version
 	pc, _, err := client.PipelineConfigs.Update(ctx, name, p)
@@ -345,6 +349,12 @@ func extractPipeline(d *schema.ResourceData) (p *gocd.Pipeline, err error) {
 
 	if envVars, ok := d.Get("environment_variables").([]interface{}); ok && len(envVars) > 0 {
 		p.EnvironmentVariables = dataSourceGocdJobEnvVarsRead(envVars)
+	}
+
+	if rStages, hasStages := d.GetOk("stages"); hasStages {
+		if stages := decodeConfigStringList(rStages.([]interface{})); len(stages) > 0 {
+			resourcePipelineParseStages(stages, p)
+		}
 	}
 
 	return p, nil
@@ -460,6 +470,19 @@ func readPipeline(d *schema.ResourceData, p *gocd.Pipeline, err error) error {
 
 	err = readPipelineMaterials(d, p.Materials)
 
+	var s string
+	if stages := p.Stages; len(stages) > 0 {
+		stringStages := []string{}
+		for _, stage := range stages {
+			if s, err = stage.JSONString(); err != nil {
+				return err
+			}
+			stringStages = append(stringStages, s)
+		}
+
+		d.Set("stages", stringStages)
+	}
+
 	if len(p.Parameters) > 0 {
 		rawParams := make(map[string]string, len(p.Parameters))
 		for _, param := range p.Parameters {
@@ -471,20 +494,27 @@ func readPipeline(d *schema.ResourceData, p *gocd.Pipeline, err error) error {
 	return err
 }
 
-func isSwitchToTemplate(d *schema.ResourceData) (templateToPipeline bool, change bool) {
-	change = d.HasChange("template")
-	if !change {
-		return false, false
-	}
-	if template, hasTemplate := d.GetOk("template"); hasTemplate {
-		return template == "", change
-	}
-	return templateToPipeline, change
-}
-
 func supressMaterialBranchDiff(k, old, new string, d *schema.ResourceData) bool {
 	if old == "" && new == "master" || old == "master" && new == "" {
 		return true
 	}
 	return false
+}
+
+func ingestEnvironmentVariables(environmentVariables []*gocd.EnvironmentVariable) []map[string]interface{} {
+	envVarMaps := []map[string]interface{}{}
+	for _, rawEnvVar := range environmentVariables {
+		envVarMap := map[string]interface{}{
+			"name":   rawEnvVar.Name,
+			"secure": rawEnvVar.Secure,
+		}
+		if rawEnvVar.Value != "" {
+			envVarMap["value"] = rawEnvVar.Value
+		}
+		if rawEnvVar.EncryptedValue != "" {
+			envVarMap["encrypted_value"] = rawEnvVar.EncryptedValue
+		}
+		envVarMaps = append(envVarMaps, envVarMap)
+	}
+	return envVarMaps
 }
