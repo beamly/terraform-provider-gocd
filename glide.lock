@@ -1,5 +1,5 @@
-hash: 5f29253dbb9952338e41ad3de8be711f2caedfcf0fd5053070b2cf155bed1440
-updated: 2019-01-10T15:22:28.602263Z
+hash: 06e83ee07233e83ffbe5d8fe76839933c65546c3205c5855c26c3fdb81a798ca
+updated: 2019-01-15T16:08:59.531079Z
 imports:
 - name: github.com/agext/levenshtein
   version: 5f10fee965225ac1eecdc234c09daf5cd9e7f7b6
@@ -50,7 +50,7 @@ imports:
   - service/s3
   - service/sts
 - name: github.com/beamly/go-gocd
-  version: d241d381c00e1b5670a179cdcc927192a130b37b
+  version: b9b55147ddfa2dcfcbcbafae2e6b1cb65ff9e8e3
   subpackages:
   - gocd
 - name: github.com/bgentry/go-netrc
@@ -194,7 +194,7 @@ imports:
   subpackages:
   - diffmatchpatch
 - name: github.com/sirupsen/logrus
-  version: eef6b768ab01a0598a0a6db97bad2a37d31df1d1
+  version: 78fb3852d92683dc28da6cc3d5f965100677c27d
 - name: github.com/ulikunitz/xz
   version: 590df8077fbcb06ad62d7714da06c00e5dd2316d
   subpackages:
