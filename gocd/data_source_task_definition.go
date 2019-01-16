@@ -11,6 +11,7 @@ import (
 	"strconv"
 )
 
+// codebeat:disable[LOC]
 func dataSourceGocdTaskDefinition() *schema.Resource {
 	return &schema.Resource{
 		Read: dataSourceGocdTaskDefinitionRead,
@@ -108,6 +109,7 @@ func dataSourceGocdTaskDefinition() *schema.Resource {
 		},
 	}
 }
+// codebeat:enable[LOC]
 
 func dataSourceGocdTaskDefinitionRead(d *schema.ResourceData, meta interface{}) error {
 

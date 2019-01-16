@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// codebeat:disable[LOC]
 func resourcePipeline() *schema.Resource {
 	return &schema.Resource{
 		Create:   resourcePipelineCreate,
@@ -204,6 +205,7 @@ func resourcePipeline() *schema.Resource {
 		},
 	}
 }
+// codebeat:enable[LOC]
 
 func resourcePipelineCreate(d *schema.ResourceData, meta interface{}) (err error) {
 	var p *gocd.Pipeline

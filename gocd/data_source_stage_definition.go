@@ -10,6 +10,7 @@ import (
 	"strconv"
 )
 
+// codebeat:disable[LOC]
 func dataSourceGocdStageDefinition() *schema.Resource {
 	stringArg := &schema.Schema{Type: schema.TypeString}
 	optionalBoolArg := &schema.Schema{
@@ -125,6 +126,7 @@ func dataSourceGocdStageDefinition() *schema.Resource {
 		},
 	}
 }
+// codebeat:enable[LOC]
 
 func dataSourceGocdStageDefinitionRead(d *schema.ResourceData, meta interface{}) error {
 	stage := gocd.Stage{

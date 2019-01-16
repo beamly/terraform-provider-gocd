@@ -6,6 +6,7 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
+// codebeat:disable[LOC]
 func dataSourceGocdJobTemplate() *schema.Resource {
 	return &schema.Resource{
 		Read: dataSourceGocdJobTemplateRead,
@@ -136,6 +137,7 @@ func dataSourceGocdJobTemplate() *schema.Resource {
 		},
 	}
 }
+// codebeat:enable[LOC]
 
 func dataSourceGocdJobTemplateRead(d *schema.ResourceData, meta interface{}) error {
 
