@@ -137,6 +137,7 @@ func dataSourceGocdJobTemplate() *schema.Resource {
 		},
 	}
 }
+
 // codebeat:enable[LOC]
 
 func dataSourceGocdJobTemplateRead(d *schema.ResourceData, meta interface{}) error {

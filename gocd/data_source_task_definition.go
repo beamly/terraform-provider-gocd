@@ -109,6 +109,7 @@ func dataSourceGocdTaskDefinition() *schema.Resource {
 		},
 	}
 }
+
 // codebeat:enable[LOC]
 
 func dataSourceGocdTaskDefinitionRead(d *schema.ResourceData, meta interface{}) error {

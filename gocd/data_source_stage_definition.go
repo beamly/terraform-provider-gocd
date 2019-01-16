@@ -126,6 +126,7 @@ func dataSourceGocdStageDefinition() *schema.Resource {
 		},
 	}
 }
+
 // codebeat:enable[LOC]
 
 func dataSourceGocdStageDefinitionRead(d *schema.ResourceData, meta interface{}) error {

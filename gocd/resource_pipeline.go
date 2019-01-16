@@ -205,6 +205,7 @@ func resourcePipeline() *schema.Resource {
 		},
 	}
 }
+
 // codebeat:enable[LOC]
 
 func resourcePipelineCreate(d *schema.ResourceData, meta interface{}) (err error) {
