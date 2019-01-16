@@ -26,19 +26,80 @@ __NOTE__: Given the requirements by hashicorp for SLA's to be set for importing 
 ## Components
 
  - Data
+     - [`gocd_stage_definition`](#gocd_stage_definition)
      - [`gocd_task_definition`](#gocd_task_definition)
      - [`gocd_job_definition`](#gocd_job_definition)
  - Resources
      - [`gocd_pipeline`](#gocd_pipeline)
      - [`gocd_pipeline_template`](#gocd_pipeline_template)
-     - [`gocd_pipeline_stage`](#gocd_pipeline_stage)
      - [`gocd_environment`](#gocd_environment)
      - [`gocd_environment_association`](#gocd_environment_association)
 
 ## Data
 
+ - [`gocd_stage_definition`](#gocd_stage_definition)
  - [`gocd_task_definition`](#gocd_task_definition)
  - [`gocd_job_definition`](#gocd_job_definition)
+
+### gocd\_stage\_definition
+
+Generates json strings for GoCD stage definitions for use in Pipelines or Pipeline Templates.
+
+#### Example Usage
+
+```hcl
+data "gocd_stage_definition" "build" {
+  name = "plan"
+  jobs = [
+  <<JOB
+ {
+  "name": "plan",
+  "tasks": [{
+    "type": "exec",
+    "attributes": {
+      "run_if": ["passed"],
+      "command": "terraform",
+      "arguments": ["plan"]
+    }
+  }]
+ }
+  JOB
+  ]
+}
+```
+#### Argument Reference
+
+Stage definition as defined in the [GoCD API](https://api.gocd.org/current/#the-stage-object).
+
+ - `name` - (Required) The name of the stage.
+ - `jobs` - (Required) The list of JSON encoded job definitions.
+ - `fetch_materials` - (Optional)  Whether to perform material update/checkout.
+ - `clean_working_directory` - (Optional)  Whether to delete the working directory every time.
+ - `never_cleanup_artifacts` - (Optional)  Never cleanup artifacts for this stage, if purging artifacts is configured at the Server Level.
+ - `approval` - (Optional)  An `approval` block, see below.
+ - `environment_variables` - (Optional) The list of environment variables that will be passed to all tasks (commands) that are part of this pipeline. Each `environment_variables` block supports fields documented below.
+
+The `approval` block supports:
+
+Approval definition as defined in the [GoCD API](https://api.gocd.org/current/#the-approval-object).
+
+ - `type` - (Required) The type of the approval on which stage will trigger. Can be one of `success` or `manual`.
+ - `authorization` - (Required) An `authorization` block, see below.
+
+The `authorization` block supports:
+
+Authorization definition as defined in the [GoCD API](https://api.gocd.org/current/#the-authorization-object).
+
+ - `users` - (Optional) The list of users authorized to operate (run) on this stage.
+ - `roles` - (Optional) The list of roles authorized to operate (run) on this stage.
+
+The `environment_variables` block supports:
+
+ - `name` - (Required) The name of the environment variable.
+ - `value` - (Optional) The value of the environment variable. One of `value` or `encrypted_value` must be set.
+ - `encrypted_value` - (Optional) The encrypted value of the environment variable. One of `value` or `encrypted_value` must be set.
+ - `secure` - Whether environment variable is secure or not. When set to `true`, encrypts the value if one is specified. The default value is `false`.
+
 
 ### gocd\_task\_definition
 
@@ -147,7 +208,6 @@ The `properties` block supports:
 
  - [`gocd_pipeline`](#gocd_pipeline)
  - [`gocd_pipeline_template`](#gocd_pipeline_template)
- - [`gocd_pipeline_stage`](#gocd_pipeline_stage)
  - [`gocd_environment`](#gocd_environment)
  - [`gocd_environment_association`](#gocd_environment_association)
 
@@ -172,6 +232,7 @@ resource "gocd_pipeline" "build" {
       }
     }
   ]
+  stages = []
 }
 ```
 
@@ -180,10 +241,11 @@ resource "gocd_pipeline" "build" {
  - `name` - (Required) The name of the pipeline.
  - `group` - (Required) The name of the pipeline group to deploy into.
  - `materials` - (Required) The list of materials to be used by pipeline. At least one material must be specified. Each `materials` block supports fields documented below.
+ - `stages` - (Required unless `template` is specified) The list of JSON encoded stage definitions. 
  - `label_template` - (Optional)  The label template to customise the pipeline instance label.
  - `enable_pipeline_locking` - (Optional, Deprecated)  Whether pipeline is locked to run single instance or not. See notes below.
  - `lock_behavior` - (Optional) Whether pipeline is locked to run single instance. `none` (never lock), `lockOnFailure` (only lock after a failure) or `unlockWhenFinished` (lock whilst running, then always unlock). See notes below.
- - `template` - (Optional)  The name of the template used by pipeline. A `gocd_pipeline_stage` can not be assigned to a `gocd_pipeline` it `template` is set.
+ - `template` - (Optional)  The name of the template used by pipeline. Conflicts with `stages`.
  - `parameters` - (Optional) A [map](https://www.terraform.io/docs/configuration/variables.html#maps) of parameters to be used for substitution in a pipeline or pipeline template.
  - `environment_variables` - (Optional) The list of environment variables that will be passed to all tasks (commands) that are part of this pipeline. Each `environment_variables` block supports fields documented below.
 
@@ -242,42 +304,6 @@ resource "gocd_pipeline_template" "terraform-builder" {
 Pipeline Templates can be imported using the pipeline template name, e.g.
 
     $ terraform import gocd_pipeline_template.pipeline-template pipeline-template-name
-
-### gocd\_pipeline\_stage
-
-Provides support for creating stages for pipelines or pipeline templates in GoCD.
-
-#### Example Usage
-
-```hcl
-resource "gocd_pipeline_stage" "build" {
-  name = "plan"
-  pipeline = "plan"
-  jobs = [
-  <<JOB
- {
-  "name": "plan",
-  "tasks": [{
-    "type": "exec",
-    "attributes": {
-      "run_if": ["passed"],
-      "command": "terraform",
-      "arguments": ["plan"]
-    }
-  }]
- }
-  JOB
-  ]
-}
-```
-
-#### Import
-
-Pipeline Stages can be imported using a type identifier (`template` or `pipeline`), the pipeline or template name, and the stage name, e.g.
-
-    $ terraform import gocd_pipeline_stage.pipeline-stage pipeline/pipeline-name/pipeline-stage
-    $ ...
-    $ terraform import gocd_pipeline_stage.template-stage template/template-name/template-stage
 
 ### gocd\_environment
 
