@@ -48,7 +48,7 @@ Generates json strings for GoCD stage definitions for use in Pipelines or Pipeli
 #### Example Usage
 
 ```hcl
-data "gocd_stage_definition" "build" {
+data "gocd_stage_definition" "my-stage" {
   name = "plan"
   jobs = [
   <<JOB
@@ -65,6 +65,10 @@ data "gocd_stage_definition" "build" {
  }
   JOB
   ]
+}
+
+output "my-stage" {
+  value = "${data.gocd_stage_definition.my-stage.json}"
 }
 ```
 #### Argument Reference
@@ -100,6 +104,9 @@ The `environment_variables` block supports:
  - `encrypted_value` - (Optional) The encrypted value of the environment variable. One of `value` or `encrypted_value` must be set.
  - `secure` - Whether environment variable is secure or not. When set to `true`, encrypts the value if one is specified. The default value is `false`.
 
+#### Attributes Reference
+
+ - `json` - JSON encoded string of the stage definition
 
 ### gocd\_task\_definition
 
@@ -112,6 +119,10 @@ data "gocd_task_definition" "my-task" {
   type = "exec"
   command = "terraform"
   arguments = ["init"]
+}
+
+output "my-task" {
+  value = "${data.gocd_task_definition.my-task.json}"
 }
 ```
 
@@ -140,6 +151,10 @@ Task definition as defined in the [GoCD API](https://api.gocd.org/current/#the-t
  - `artifact_origin` - (Required from version 18.7.0 of GoCD Server) The origin of the fetched artifact, can be set to "gocd" or "external".
  - `is_source_a_file` - (Optional) Whether source is a file or directory.
  - `destination` - (Optional) The path of the directory where the artifact is fetched to.
+
+#### Attributes Reference
+
+ - `json` - JSON encoded string of the task definition
 
 ### gocd\_job\_definition
 
