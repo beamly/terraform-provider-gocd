@@ -11,6 +11,7 @@ import (
 
 const PLACEHOLDER_NAME = "TERRAFORM_PLACEHOLDER"
 
+// codebeat:disable[LOC]
 func resourcePipelineTemplate() *schema.Resource {
 	return &schema.Resource{
 		Create: resourcePipelineTemplateCreate,
@@ -43,6 +44,8 @@ func resourcePipelineTemplate() *schema.Resource {
 		},
 	}
 }
+
+// codebeat:enable[LOC]
 
 func resourcePipelineTemplateImport(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	d.Set("name", d.Id())

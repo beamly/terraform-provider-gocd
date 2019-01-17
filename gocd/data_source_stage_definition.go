@@ -6,7 +6,6 @@ import (
 	"github.com/hashicorp/terraform/helper/hashcode"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/helper/validation"
-	"log"
 	"strconv"
 )
 
@@ -174,30 +173,16 @@ func dataSourceGocdStageDefinitionRead(d *schema.ResourceData, meta interface{})
 func dataSourceStageParseApproval(data *schema.ResourceData, doc *gocd.Stage) error {
 
 	if resources := data.Get("approval").(*schema.Set).List(); len(resources) > 0 {
-		log.Printf("[DEBUG] XXX resources=%+v\n", resources)
-
 		var users, roles []interface{}
-
 		for _, rawApproval := range resources {
-			log.Printf("[DEBUG] XXX rawApproval=%+v\n", rawApproval)
-
 			approvalMap := rawApproval.(map[string]interface{})
-			log.Printf("[DEBUG] XXX approvalMap=%+v\n", approvalMap)
-
 			if sAuth := approvalMap["authorization"].(*schema.Set).List(); len(sAuth) > 0 {
-				log.Printf("[DEBUG] XXX sAuth=%+v\n", sAuth)
-
 				for _, rawAuth := range sAuth {
-					log.Printf("[DEBUG] XXX rawAuth=%+v\n", rawAuth)
-
 					auth := rawAuth.(map[string]interface{})
-					log.Printf("[DEBUG] XXX auth=%+v\n", auth)
-
 					users = auth["users"].(*schema.Set).List()
 					roles = auth["roles"].(*schema.Set).List()
 				}
 			}
-
 			doc.Approval = &gocd.Approval{
 				Type: approvalMap["type"].(string),
 				Authorization: &gocd.Authorization{
@@ -205,9 +190,6 @@ func dataSourceStageParseApproval(data *schema.ResourceData, doc *gocd.Stage) er
 					Roles: decodeConfigStringList(roles),
 				},
 			}
-
-			log.Printf("[DEBUG] XXX %+v\n", doc.Approval)
-
 		}
 	}
 
