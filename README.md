@@ -23,6 +23,10 @@ __NOTE__: Given the requirements by hashicorp for SLA's to be set for importing 
 
 > The expectation is to resolve all critical issues within 48 hours and all other issues within 5 business days. 
 
+## Migration
+
+This provider usees [Semantic Versioning](https://semver.org/) where significant breaking changes are introduced in new major versions. For details on such breaking changes and how to migrate your Terraform configuration, please consult [MIGRATION.md](MIGRATION.md).
+
 ## Components
 
  - Data
