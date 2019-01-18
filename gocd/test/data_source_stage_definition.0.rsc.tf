@@ -12,7 +12,7 @@ data "gocd_task_definition" "test" {
     "version",
   ]
 
-  working_directory = "/tmp/"
+  working_directory = "tmp/"
 }
 
 data "gocd_job_definition" "test" {

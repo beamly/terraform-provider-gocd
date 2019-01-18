@@ -5,7 +5,7 @@ data "gocd_task_definition" "test" {
     "failed",
   ]
 
-  working_directory = "/tmp/ant/"
+  working_directory = "tmp/ant/"
   target            = "test-ant"
   build_file        = "./ant.xml"
 }

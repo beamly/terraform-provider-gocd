@@ -5,7 +5,7 @@ data "gocd_task_definition" "test" {
     "failed",
   ]
 
-  working_directory = "/tmp/rake/"
+  working_directory = "tmp/rake/"
   target            = "test-rake"
   build_file        = "./rake.rb"
 }

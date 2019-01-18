@@ -21,7 +21,7 @@
               "passed"
             ],
             "command": "/usr/local/bin/terraform",
-            "working_directory": "/tmp/",
+            "working_directory": "tmp/",
             "arguments": [
               "-debug",
               "version"
