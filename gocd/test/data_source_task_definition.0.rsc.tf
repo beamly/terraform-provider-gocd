@@ -5,7 +5,7 @@ data "gocd_task_definition" "test" {
     "passed",
   ]
 
-  working_directory = "/tmp/"
+  working_directory = "tmp/"
   command           = "/usr/local/bin/terraform"
 
   arguments = [

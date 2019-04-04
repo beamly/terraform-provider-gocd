@@ -1,5 +1,6 @@
 resource "gocd_pipeline_template" "test-template4" {
   name = "test-template4"
+  stages = ["${data.gocd_stage_definition.test-stage.json}"]
 }
 
 resource "gocd_pipeline" "test-pipeline" {
@@ -20,14 +21,35 @@ resource "gocd_pipeline" "test-pipeline" {
         branch = "master"
 
         //        auto_update = true
-        filter {
-          ignore = [
-            "gocd-agents/Dockerfile.base",
-            "Makefile",
-            "gocd-agents/files/base/",
-          ]
-        }
+        filter = [
+          "gocd-agents/Dockerfile.base",
+          "Makefile",
+          "gocd-agents/files/base/",
+        ]
       }
     },
   ]
 }
+
+data "gocd_stage_definition" "test-stage" {
+  name = "test"
+  jobs = [
+    "${data.gocd_job_definition.test-job.json}"
+  ]
+}
+
+data "gocd_job_definition" "test-job" {
+  name = "test"
+  tasks = [
+    "${data.gocd_task_definition.test.json}"
+  ]
+}
+data "gocd_task_definition" "test" {
+  type = "exec"
+  command = "echo"
+  arguments = [
+    "hello",
+    "world",
+  ]
+}
+

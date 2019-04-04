@@ -2,7 +2,6 @@ package gocd
 
 import (
 	"crypto/tls"
-	"fmt"
 	"github.com/beamly/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/logging"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -10,7 +9,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"runtime"
 	"strings"
 )
 
@@ -26,16 +24,15 @@ func Provider() terraform.ResourceProvider {
 func SchemaProvider() *schema.Provider {
 	return &schema.Provider{
 		DataSourcesMap: map[string]*schema.Resource{
-			//"gocd_stage_definition": dataSourceGocdStageTemplate(),
-			"gocd_job_definition":  dataSourceGocdJobTemplate(),
-			"gocd_task_definition": dataSourceGocdTaskDefinition(),
+			"gocd_stage_definition": dataSourceGocdStageDefinition(),
+			"gocd_job_definition":   dataSourceGocdJobTemplate(),
+			"gocd_task_definition":  dataSourceGocdTaskDefinition(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"gocd_environment":             resourceEnvironment(),
 			"gocd_environment_association": resourceEnvironmentAssociation(),
 			"gocd_pipeline_template":       resourcePipelineTemplate(),
 			"gocd_pipeline":                resourcePipeline(),
-			"gocd_pipeline_stage":          resourcePipelineStage(),
 		},
 		Schema: map[string]*schema.Schema{
 			"baseurl": {
@@ -137,8 +134,9 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	hClient.Transport = logging.NewTransport("GoCD", hClient.Transport)
 	gc := gocd.NewClient(cfg, hClient)
 
-	versionString := terraform.VersionString()
-	gc.UserAgent = fmt.Sprintf("(%s %s) Terraform/%s", runtime.GOOS, runtime.GOARCH, versionString)
+	// No-longer supported by go-gocd
+	// versionString := terraform.VersionString()
+	// gc.params.UserAgent = fmt.Sprintf("(%s %s) Terraform/%s", runtime.GOOS, runtime.GOARCH, versionString)
 
 	return gc, nil
 

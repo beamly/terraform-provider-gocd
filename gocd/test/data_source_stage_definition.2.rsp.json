@@ -4,10 +4,16 @@
   "clean_working_directory": false,
   "never_cleanup_artifacts": false,
   "approval": {
-    "type": "success",
+    "type": "manual",
     "authorization": {
-      "users": [],
-      "roles": []
+      "users": [
+        "test2",
+        "test1"
+      ],
+      "roles": [
+        "test4",
+        "test3"
+      ]
     }
   },
   "jobs": [

@@ -2,13 +2,14 @@ package gocd
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/beamly/go-gocd/gocd"
-	"strings"
-
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/helper/validation"
+	"strings"
 )
 
+// codebeat:disable[LOC]
 func resourcePipeline() *schema.Resource {
 	return &schema.Resource{
 		Create:   resourcePipelineCreate,
@@ -179,11 +180,11 @@ func resourcePipeline() *schema.Resource {
 										Optional: true,
 									},
 									"filter": {
-										Type:     schema.TypeSet,
+										Type:     schema.TypeList,
 										Optional: true,
-										Computed: true,
-										MaxItems: 1,
-										Elem:     materialFilterResource(),
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
 									},
 								},
 							},
@@ -191,23 +192,21 @@ func resourcePipeline() *schema.Resource {
 					},
 				},
 			},
-		},
-	}
-}
-
-func materialFilterResource() *schema.Resource {
-	return &schema.Resource{
-		Schema: map[string]*schema.Schema{
-			"ignore": {
-				Type:     schema.TypeList,
-				Required: true,
+			"stages": {
+				Type:          schema.TypeList,
+				MinItems:      1,
+				Optional:      true,
+				ConflictsWith: []string{"template"},
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
+				DiffSuppressFunc: supressJSONDiffs,
 			},
 		},
 	}
 }
+
+// codebeat:enable[LOC]
 
 func resourcePipelineCreate(d *schema.ResourceData, meta interface{}) (err error) {
 	var p *gocd.Pipeline
@@ -219,18 +218,21 @@ func resourcePipelineCreate(d *schema.ResourceData, meta interface{}) (err error
 	if p, err = extractPipeline(d); err != nil {
 		return
 	}
-	// GoCD does not allow pipelines to have _no_ stages. As this provider has split stages and pipelines into separate
-	// resources, we need to add a place holder stage if there are no stages yet configured and we're not using a
-	// template.
-	if (p.Stages == nil || len(p.Stages) == 0) && p.Template == "" {
-		p.Stages = []*gocd.Stage{
-			stagePlaceHolder(),
-		}
-	}
 
 	group := d.Get("group").(string)
 	pc, _, err := client.PipelineConfigs.Create(context.Background(), group, p)
 	return readPipeline(d, pc, err)
+}
+
+func resourcePipelineParseStages(stages []string, doc *gocd.Pipeline) error {
+	for _, rawstage := range stages {
+		stage := &gocd.Stage{}
+		if err := json.Unmarshal([]byte(rawstage), stage); err != nil {
+			return err
+		}
+		doc.Stages = append(doc.Stages, stage)
+	}
+	return nil
 }
 
 func resourcePipelineRead(d *schema.ResourceData, meta interface{}) error {
@@ -261,8 +263,6 @@ func resourcePipelineUpdate(d *schema.ResourceData, meta interface{}) (err error
 		d.Set("name", name)
 	}
 
-	templateToPipeline, templateChange := isSwitchToTemplate(d)
-
 	if p, err = extractPipeline(d); err != nil {
 		return err
 	}
@@ -273,14 +273,6 @@ func resourcePipelineUpdate(d *schema.ResourceData, meta interface{}) (err error
 	defer client.Unlock()
 
 	existing, _, err := client.PipelineConfigs.Get(ctx, name)
-
-	if templateChange && !templateToPipeline {
-		p.Stages = nil
-	} else if templateToPipeline {
-		p.Stages = []*gocd.Stage{stagePlaceHolder()}
-	} else {
-		p.Stages = existing.Stages
-	}
 
 	p.Version = existing.Version
 	pc, _, err := client.PipelineConfigs.Update(ctx, name, p)
@@ -362,6 +354,12 @@ func extractPipeline(d *schema.ResourceData) (p *gocd.Pipeline, err error) {
 		p.EnvironmentVariables = dataSourceGocdJobEnvVarsRead(envVars)
 	}
 
+	if rStages, hasStages := d.GetOk("stages"); hasStages {
+		if stages := decodeConfigStringList(rStages.([]interface{})); len(stages) > 0 {
+			resourcePipelineParseStages(stages, p)
+		}
+	}
+
 	return p, nil
 }
 
@@ -383,18 +381,14 @@ func extractPipelineMaterials(rawMaterials []interface{}) ([]gocd.Material, erro
 
 		mat := rawMaterial.(map[string]interface{})
 		m.Ingest(mat)
+
 		if mattr1, ok1 := mat["attributes"].([]interface{}); ok1 {
 			if mattr2, ok2 := mattr1[0].(map[string]interface{}); ok2 {
 				if filterI, ok3 := mattr2["filter"]; ok3 {
-					if filterSet, ok4 := filterI.(*schema.Set); ok4 {
-						filters := filterSet.List()
-						if len(filters) > 0 {
-							if filter, ok5 := filters[0].(map[string]interface{}); ok5 {
-								if ignore, ok6 := filter["ignore"]; ok6 {
-									mattr2["filter"] = map[string]interface{}{
-										"ignore": decodeConfigStringList(ignore.([]interface{})),
-									}
-								}
+					if ignore, ok4 := filterI.([]interface{}); ok4 {
+						if len(ignore) > 0 {
+							mattr2["filter"] = map[string]interface{}{
+								"ignore": ignore,
 							}
 						}
 					}
@@ -413,18 +407,15 @@ func readPipelineMaterials(d *schema.ResourceData, materials []gocd.Material) er
 	materialImports := make([]interface{}, len(materials))
 	for i, m := range materials {
 		attrs := m.Attributes.GenerateGeneric()
-		filterSet := schema.NewSet(
-			schema.HashResource(materialFilterResource()),
-			[]interface{}{},
-		)
+
 		if filters, ok1 := attrs["filter"]; ok1 {
 			if filterI, ok2 := filters.(map[string]interface{}); ok2 {
-				if len(filterI) > 0 {
-					filterSet.Add(filterI)
+				if ignore, ok3 := filterI["ignore"]; ok3 {
+					attrs["filter"] = ignore
 				}
-				attrs["filter"] = filterSet
 			}
 		}
+
 		materialImports[i] = map[string]interface{}{
 			"type":       m.Type,
 			"attributes": []interface{}{attrs},
@@ -482,6 +473,19 @@ func readPipeline(d *schema.ResourceData, p *gocd.Pipeline, err error) error {
 
 	err = readPipelineMaterials(d, p.Materials)
 
+	var s string
+	if stages := p.Stages; len(stages) > 0 {
+		stringStages := []string{}
+		for _, stage := range stages {
+			if s, err = stage.JSONString(); err != nil {
+				return err
+			}
+			stringStages = append(stringStages, s)
+		}
+
+		d.Set("stages", stringStages)
+	}
+
 	if len(p.Parameters) > 0 {
 		rawParams := make(map[string]string, len(p.Parameters))
 		for _, param := range p.Parameters {
@@ -493,20 +497,27 @@ func readPipeline(d *schema.ResourceData, p *gocd.Pipeline, err error) error {
 	return err
 }
 
-func isSwitchToTemplate(d *schema.ResourceData) (templateToPipeline bool, change bool) {
-	change = d.HasChange("template")
-	if !change {
-		return false, false
-	}
-	if template, hasTemplate := d.GetOk("template"); hasTemplate {
-		return template == "", change
-	}
-	return templateToPipeline, change
-}
-
 func supressMaterialBranchDiff(k, old, new string, d *schema.ResourceData) bool {
 	if old == "" && new == "master" || old == "master" && new == "" {
 		return true
 	}
 	return false
+}
+
+func ingestEnvironmentVariables(environmentVariables []*gocd.EnvironmentVariable) []map[string]interface{} {
+	envVarMaps := []map[string]interface{}{}
+	for _, rawEnvVar := range environmentVariables {
+		envVarMap := map[string]interface{}{
+			"name":   rawEnvVar.Name,
+			"secure": rawEnvVar.Secure,
+		}
+		if rawEnvVar.Value != "" {
+			envVarMap["value"] = rawEnvVar.Value
+		}
+		if rawEnvVar.EncryptedValue != "" {
+			envVarMap["encrypted_value"] = rawEnvVar.EncryptedValue
+		}
+		envVarMaps = append(envVarMaps, envVarMap)
+	}
+	return envVarMaps
 }

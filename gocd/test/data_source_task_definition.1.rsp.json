@@ -4,7 +4,7 @@
     "run_if": [
       "failed"
     ],
-    "working_directory": "/tmp/ant/",
+    "working_directory": "tmp/ant/",
     "build_file": "./ant.xml",
     "target": "test-ant"
   }

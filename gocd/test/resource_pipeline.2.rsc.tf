@@ -1,5 +1,6 @@
 resource "gocd_pipeline_template" "test-pipeline" {
   name = "template2-terraform"
+  stages = ["${data.gocd_stage_definition.test-stage.json}"]
 }
 
 resource "gocd_pipeline" "test-pipeline" {
@@ -18,13 +19,34 @@ resource "gocd_pipeline" "test-pipeline" {
         destination = "gocd-dir"
 
         //        auto_update = true
-        filter {
-          ignore = [
-            "one",
-            "two",
-          ]
-        }
+        filter = [
+          "one",
+          "two",
+        ]
       }
     },
   ]
 }
+
+data "gocd_stage_definition" "test-stage" {
+  name = "test"
+  jobs = [
+    "${data.gocd_job_definition.test-job.json}"
+  ]
+}
+
+data "gocd_job_definition" "test-job" {
+  name = "test"
+  tasks = [
+    "${data.gocd_task_definition.test.json}"
+  ]
+}
+data "gocd_task_definition" "test" {
+  type = "exec"
+  command = "echo"
+  arguments = [
+    "hello",
+    "world",
+  ]
+}
+

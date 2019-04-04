@@ -1,4 +1,4 @@
-FROM gocd/gocd-server:v18.7.0
+FROM gocd/gocd-server:v18.12.0
 
 ARG UID
 

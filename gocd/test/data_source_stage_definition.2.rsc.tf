@@ -22,3 +22,19 @@ data "gocd_job_definition" "test" {
     "${data.gocd_task_definition.test.json}",
   ]
 }
+
+data "gocd_stage_definition" "test" {
+  name = "stage-name"
+
+  jobs = [
+    "${data.gocd_job_definition.test.json}",
+  ]
+
+  approval {
+    type = "manual"
+    authorization {
+      users = ["test1", "test2"]
+      roles = ["test3", "test4"]
+    }
+  }
+}
