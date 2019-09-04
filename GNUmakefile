@@ -13,8 +13,7 @@ export GOCD_SKIP_SSL_CHECK=1
 travis: before_install script after_success deploy_on_develop
 
 before_install:
-	@go get github.com/golang/lint/golint
-	@go install github.com/golang/lint/golint
+	go get -mod=readonly golang.org/x/lint/golint
 	curl https://glide.sh/get | sh
 	glide install
 
@@ -23,11 +22,12 @@ script: testacc
 after_failure: cleanup
 
 after_success: report_coverage cleanup
-	go get github.com/goreleaser/goreleaser
+	go get -mod=readonly github.com/goreleaser/goreleaser
 
 prepare_goreleaser:
 	git clean -fd
-	go get
+	go get -mod=readonly
+	git checkout -- go.mod go.sum
 
 deploy_on_tag: prepare_goreleaser
 	goreleaser --debug
@@ -49,7 +49,7 @@ report_coverage:
 default: build
 
 build: fmtcheck
-	go install
+	go install -mod=readonly
 
 test: fmtcheck
 	TF_ACC=1 TESTARGS="$(TESTARGS)" bash ./scripts/go-test.sh

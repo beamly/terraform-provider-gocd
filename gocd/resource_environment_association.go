@@ -85,7 +85,8 @@ func resourceEnvironmentAssociationCreate(d *schema.ResourceData, meta interface
 	defer client.Unlock()
 	env, _, err := client.Environments.Patch(context.Background(), environment, &gocd.EnvironmentPatchRequest{
 		Pipelines: &gocd.PatchStringAction{
-			Add: []string{pipeline},
+			Add:    []string{pipeline},
+			Remove: []string{},
 		},
 	})
 	if err != nil {
@@ -126,6 +127,7 @@ func resourceEnvironmentAssociationDelete(d *schema.ResourceData, meta interface
 	client := meta.(*gocd.Client)
 	_, _, err := client.Environments.Patch(context.Background(), environment, &gocd.EnvironmentPatchRequest{
 		Pipelines: &gocd.PatchStringAction{
+			Add:    []string{},
 			Remove: []string{value},
 		},
 	})

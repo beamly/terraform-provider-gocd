@@ -1,7 +1,7 @@
 language: go
 go:
   - 1.11.x
-
+  - 1.x
 
 services:
   - docker
@@ -15,6 +15,8 @@ matrix:
   fast_finish: true
 
 env:
+  global:
+    - GO111MODULE=on
   matrix:
     - GOCD_URL=http://127.0.0.1:8153/go/
     - GOCD_URL=https://127.0.0.1:8154/go/ GOCD_SKIP_SSL_CHECK=1
@@ -45,7 +47,7 @@ deploy:
     script: make deploy_on_tag
     on:
       tags: true
-      condition: $TRAVIS_GO_VERSION =~ ^1\.10\.([0-9]+|x)?$ && $GOCD_SKIP_SSL_CHECK = 1
+      condition: $TRAVIS_GO_VERSION =~ ^1\.11\.([0-9]+|x)?$ && $GOCD_SKIP_SSL_CHECK = 1
   - provider: script
     skip_cleanup: true
     script: make deploy_on_develop
