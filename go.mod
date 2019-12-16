@@ -6,7 +6,7 @@ require (
 	github.com/apparentlymart/go-textseg v1.0.0
 	github.com/armon/go-radix v1.0.0
 	github.com/aws/aws-sdk-go v0.0.0-20181030211252-d939ec10eabd
-	github.com/beamly/go-gocd v0.0.0-20191024094808-8855c97b8e81
+	github.com/beamly/go-gocd v0.0.0-20191210161853-157c72c154ac
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d
 	github.com/bgentry/speakeasy v0.1.0
 	github.com/blang/semver v0.0.0-20180723201105-3c1074078d32
@@ -51,7 +51,7 @@ require (
 	github.com/urfave/cli v1.22.1 // indirect
 	github.com/zclconf/go-cty v0.0.0-20181017232614-01c5aba823a6
 	golang.org/x/crypto v0.0.0-20190617133340-57b3e21c3d56
-	golang.org/x/net v0.0.0-20190404232315-eb5bcb51f2a3
+	golang.org/x/net v0.0.0-20190620200207-3b0461eec859
 	golang.org/x/sys v0.0.0-20191024073052-e66fe6eb8e0c
 	golang.org/x/text v0.3.0
 	google.golang.org/genproto v0.0.0-20181029155118-b69ba1387ce2

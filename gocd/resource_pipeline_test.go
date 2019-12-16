@@ -14,7 +14,6 @@ func testResourcePipeline(t *testing.T) {
 	t.Run("FullStack2", testResourcePipelineFullStack2)
 	t.Run("DisableAutoUpdate", testResourcePipelineDisableAutoUpdate)
 	t.Run("LinkedDependencies", testResourcePipelineLinkedDependencies)
-	t.Run("LinkedDependencies", testResourcePipelineLinkedDependencies)
 	t.Run("Missing", testResourcePipelineMissing)
 }
 
