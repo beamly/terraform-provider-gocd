@@ -21,6 +21,8 @@ github.com/beamly/go-gocd v0.0.0-20191024094808-8855c97b8e81 h1:Mg6532CYhtYnmxUR
 github.com/beamly/go-gocd v0.0.0-20191024094808-8855c97b8e81/go.mod h1:dO4COVg0xWADKoeri7a/eYOZH9wOVKmJF/Okmo8hHGM=
 github.com/beamly/go-gocd v0.0.0-20191210161853-157c72c154ac h1:rqsVai5oEV7SpnF5vS3rHKP6/UhiGjX3Pd3kMvS1TGM=
 github.com/beamly/go-gocd v0.0.0-20191210161853-157c72c154ac/go.mod h1:tozX43aGp6N+1SgnO9J77A+GAYN8FdplMiurC2Ro2Qs=
+github.com/beamly/go-gocd v0.0.0-20191217133703-594fec066ca0 h1:82YfK5OC5xumAOVu20x/aw/tQNtQLX8S5AgZYi/D17k=
+github.com/beamly/go-gocd v0.0.0-20191217133703-594fec066ca0/go.mod h1:tozX43aGp6N+1SgnO9J77A+GAYN8FdplMiurC2Ro2Qs=
 github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d h1:xDfNPAt8lFiC1UJrqV3uuy861HCTo708pDMbjHHdCas=
 github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d/go.mod h1:6QX/PXZ00z/TKoufEY6K/a0k6AhaJrQKdFe6OfVXsa4=
 github.com/bgentry/speakeasy v0.1.0 h1:ByYyxL9InA1OWqxJqqp2A5pYHUrCiAL6K3J+LKSsQkY=

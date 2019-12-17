@@ -6,7 +6,7 @@ require (
 	github.com/apparentlymart/go-textseg v1.0.0
 	github.com/armon/go-radix v1.0.0
 	github.com/aws/aws-sdk-go v0.0.0-20181030211252-d939ec10eabd
-	github.com/beamly/go-gocd v0.0.0-20191210161853-157c72c154ac
+	github.com/beamly/go-gocd v0.0.0-20191217133703-594fec066ca0
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d
 	github.com/bgentry/speakeasy v0.1.0
 	github.com/blang/semver v0.0.0-20180723201105-3c1074078d32

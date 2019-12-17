@@ -22,7 +22,8 @@ script: testacc
 after_failure: cleanup
 
 after_success: report_coverage cleanup
-	go get -mod=readonly github.com/goreleaser/goreleaser
+	-go get -mod=readonly github.com/goreleaser/goreleaser
+	go get -mod=readonly github.com/goreleaser/goreleaser@v0.120.8
 
 prepare_goreleaser:
 	git clean -fd
