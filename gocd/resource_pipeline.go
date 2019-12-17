@@ -337,6 +337,7 @@ func extractPipeline(d *schema.ResourceData) (p *gocd.Pipeline, err error) {
 	}
 
 	p.Name = d.Get("name").(string)
+	p.Group = d.Get("group").(string)
 
 	rawMaterials := d.Get("materials")
 	if materials := rawMaterials.([]interface{}); len(materials) > 0 {
